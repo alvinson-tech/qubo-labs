@@ -31,8 +31,22 @@ if (!$seat) {
     exit();
 }
 
-// Check if seat is already occupied
+// Check if seat belongs to the correct hall for this session
 $conn = getDBConnection();
+$stmt = $conn->prepare("SELECT hall_id FROM attendance_sessions WHERE session_id = ?");
+$stmt->bind_param("i", $session_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$session_hall = $result->fetch_assoc();
+$stmt->close();
+
+if ($seat['hall_id'] != $session_hall['hall_id']) {
+    closeDBConnection($conn);
+    echo json_encode(['success' => false, 'message' => 'This QR code is not for the correct seminar hall. Please scan the correct QR code.']);
+    exit();
+}
+
+// Check if seat is already occupied
 $stmt = $conn->prepare("SELECT * FROM attendance_records WHERE session_id = ? AND seat_id = ?");
 $stmt->bind_param("ii", $session_id, $seat['seat_id']);
 $stmt->execute();

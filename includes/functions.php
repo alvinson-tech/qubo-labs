@@ -27,7 +27,7 @@ function getActiveSession($class_id) {
 // Get seat information by QR code
 function getSeatByQRCode($qr_code) {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT * FROM auditorium_seats WHERE qr_code = ?");
+    $stmt = $conn->prepare("SELECT * FROM seminar_seats WHERE qr_code = ?");
     $stmt->bind_param("s", $qr_code);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -69,7 +69,7 @@ function getLiveAttendanceData($session_id) {
     $query = "SELECT ar.*, s.seat_number, s.row_number, s.seat_position, 
               st.student_name, st.roll_number
               FROM attendance_records ar
-              JOIN auditorium_seats s ON ar.seat_id = s.seat_id
+              JOIN seminar_seats s ON ar.seat_id = s.seat_id
               JOIN students st ON ar.student_id = st.student_id
               WHERE ar.session_id = ?";
     $stmt = $conn->prepare($query);
@@ -91,7 +91,7 @@ function getAttendanceReport($session_id) {
     $query = "SELECT ar.*, s.seat_number, st.student_name, st.roll_number,
               verifier.student_name as verifier_name, verifier.roll_number as verifier_roll
               FROM attendance_records ar
-              JOIN auditorium_seats s ON ar.seat_id = s.seat_id
+              JOIN seminar_seats s ON ar.seat_id = s.seat_id
               JOIN students st ON ar.student_id = st.student_id
               LEFT JOIN students verifier ON ar.verified_by_student_id = verifier.student_id
               WHERE ar.session_id = ?
@@ -112,10 +112,11 @@ function getAttendanceReport($session_id) {
 // Get session details
 function getSessionDetails($session_id) {
     $conn = getDBConnection();
-    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section
+    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section, h.hall_name, h.room_number
               FROM attendance_sessions ats
               JOIN staff st ON ats.staff_id = st.staff_id
               JOIN classes c ON ats.class_id = c.class_id
+              JOIN seminar_halls h ON ats.hall_id = h.hall_id
               WHERE ats.session_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $session_id);
@@ -125,5 +126,36 @@ function getSessionDetails($session_id) {
     $stmt->close();
     closeDBConnection($conn);
     return $session;
+}
+
+// Get all seminar halls
+function getSeminarHalls() {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM seminar_halls ORDER BY hall_name");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $halls = [];
+    while ($row = $result->fetch_assoc()) {
+        $halls[] = $row;
+    }
+    $stmt->close();
+    closeDBConnection($conn);
+    return $halls;
+}
+
+// Get seats for a specific hall
+function getSeatsForHall($hall_id) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM seminar_seats WHERE hall_id = ? ORDER BY row_number, seat_position");
+    $stmt->bind_param("i", $hall_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $seats = [];
+    while ($row = $result->fetch_assoc()) {
+        $seats[] = $row;
+    }
+    $stmt->close();
+    closeDBConnection($conn);
+    return $seats;
 }
 ?>

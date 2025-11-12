@@ -11,8 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $staff_id = $_SESSION['user_id'];
 $session_name = $_POST['session_name'] ?? '';
 $class_id = $_POST['class_id'] ?? 0;
+$hall_id = $_POST['hall_id'] ?? 0;
 
-if (empty($session_name) || empty($class_id)) {
+if (empty($session_name) || empty($class_id) || empty($hall_id)) {
     header('Location: index.php?error=missing_fields');
     exit();
 }
@@ -26,8 +27,8 @@ if ($active_session) {
 
 // Create new session
 $conn = getDBConnection();
-$stmt = $conn->prepare("INSERT INTO attendance_sessions (staff_id, class_id, session_name, status) VALUES (?, ?, ?, 'active')");
-$stmt->bind_param("iis", $staff_id, $class_id, $session_name);
+$stmt = $conn->prepare("INSERT INTO attendance_sessions (staff_id, class_id, hall_id, session_name, status) VALUES (?, ?, ?, ?, 'active')");
+$stmt->bind_param("iiis", $staff_id, $class_id, $hall_id, $session_name);
 
 if ($stmt->execute()) {
     $session_id = $conn->insert_id;

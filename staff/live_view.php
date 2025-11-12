@@ -17,6 +17,9 @@ if ($session['status'] !== 'active') {
     header('Location: index.php');
     exit();
 }
+
+// Get seats for this hall
+$hall_seats = getSeatsForHall($session['hall_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,6 +83,19 @@ if ($session['status'] !== 'active') {
             font-weight: 500;
             font-size: 12px;
         }
+        
+        .hall-info {
+            background: #f8fafc;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .hall-info span {
+            font-weight: 700;
+            color: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -98,6 +114,9 @@ if ($session['status'] !== 'active') {
                 <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section']); ?> | 
                 Started: <?php echo date('h:i A', strtotime($session['start_time'])); ?>
             </p>
+            <div class="hall-info">
+                📍 <span><?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?></span> - 104 Seats Available
+            </div>
             <div class="attendance-stats">
                 <div class="stat-card">
                     <div class="stat-number" id="total-students">0</div>
@@ -119,8 +138,8 @@ if ($session['status'] !== 'active') {
         </div>
         
         <div class="auditorium-layout">
-            <h2>Auditorium Seating</h2>
-            <div class="stage">STAGE</div>
+            <h2>Seminar Hall Seating (Semi-Circle Layout)</h2>
+            <div class="stage">STAGE / PODIUM</div>
             <div id="seating-grid" class="seating-grid">
                 <!-- Seats will be dynamically loaded -->
             </div>
@@ -155,35 +174,44 @@ if ($session['status'] !== 'active') {
     
     <script>
         const sessionId = <?php echo $session_id; ?>;
+        const hallSeats = <?php echo json_encode($hall_seats); ?>;
         let updateInterval;
         
-        // Initialize seating grid
+        // Initialize seating grid based on hall layout
         function initSeatingGrid() {
             const grid = document.getElementById('seating-grid');
             
-            // Create 10 rows x 10 seats
-            const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+            // Group seats by row
+            const seatsByRow = {};
+            hallSeats.forEach(seat => {
+                if (!seatsByRow[seat.row_number]) {
+                    seatsByRow[seat.row_number] = [];
+                }
+                seatsByRow[seat.row_number].push(seat);
+            });
             
-            rows.forEach((row, rowIndex) => {
+            // Create rows (5 rows total)
+            for (let rowNum = 1; rowNum <= 5; rowNum++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'seat-row';
-                rowDiv.innerHTML = `<div class="row-label">${row}</div>`;
+                rowDiv.innerHTML = `<div class="row-label">R${rowNum}</div>`;
                 
                 const seatsContainer = document.createElement('div');
                 seatsContainer.className = 'seats-container';
                 
-                for (let i = 1; i <= 10; i++) {
+                const rowSeats = seatsByRow[rowNum] || [];
+                rowSeats.forEach(seat => {
                     const seatDiv = document.createElement('div');
                     seatDiv.className = 'seat-box empty';
-                    seatDiv.id = 'seat-' + row + i;
-                    seatDiv.setAttribute('data-seat', row + i);
-                    seatDiv.innerHTML = `<span class="seat-number">${row}${i}</span>`;
+                    seatDiv.id = 'seat-' + seat.seat_number;
+                    seatDiv.setAttribute('data-seat', seat.seat_number);
+                    seatDiv.innerHTML = `<span class="seat-number">${seat.seat_number}</span>`;
                     seatsContainer.appendChild(seatDiv);
-                }
+                });
                 
                 rowDiv.appendChild(seatsContainer);
                 grid.appendChild(rowDiv);
-            });
+            }
         }
         
         // Update live data
@@ -207,7 +235,8 @@ if ($session['status'] !== 'active') {
             // Reset all seats
             document.querySelectorAll('.seat-box').forEach(seat => {
                 seat.className = 'seat-box empty';
-                seat.innerHTML = `<span class="seat-number">${seat.getAttribute('data-seat')}</span>`;
+                const seatNumber = seat.getAttribute('data-seat');
+                seat.innerHTML = `<span class="seat-number">${seatNumber}</span>`;
             });
             
             // Update with current data

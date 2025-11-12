@@ -242,8 +242,8 @@ header('Content-Type: text/html; charset=utf-8');
         
         .empty-state {
             text-align: center;
-            padding: 40px;
             color: #94a3b8;
+            padding: 40px;
         }
         
         .action-buttons {
@@ -339,6 +339,10 @@ header('Content-Type: text/html; charset=utf-8');
                 <span class="info-value"><?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section']); ?></span>
             </div>
             <div class="info-item">
+                <span class="info-label">Venue:</span>
+                <span class="info-value"><?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?></span>
+            </div>
+            <div class="info-item">
                 <span class="info-label">Instructor:</span>
                 <span class="info-value"><?php echo htmlspecialchars($session['staff_name']); ?></span>
             </div>
@@ -347,12 +351,13 @@ header('Content-Type: text/html; charset=utf-8');
                 <span class="info-value"><?php echo date('F d, Y', strtotime($session['start_time'])); ?></span>
             </div>
             <div class="info-item">
-                <span class="info-label">Start Time:</span>
-                <span class="info-value"><?php echo date('h:i A', strtotime($session['start_time'])); ?></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">End Time:</span>
-                <span class="info-value"><?php echo $session['end_time'] ? date('h:i A', strtotime($session['end_time'])) : 'In Progress'; ?></span>
+                <span class="info-label">Time:</span>
+                <span class="info-value">
+                    <?php echo date('h:i A', strtotime($session['start_time'])); ?>
+                    <?php if ($session['end_time']): ?>
+                        - <?php echo date('h:i A', strtotime($session['end_time'])); ?>
+                    <?php endif; ?>
+                </span>
             </div>
         </div>
     </div>

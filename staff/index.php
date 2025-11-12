@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/functions.php';
 require_once '../config/database.php';
 requireStaff();
 
@@ -35,10 +36,14 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// Get all seminar halls
+$halls = getSeminarHalls();
+
 // Get recent sessions
-$stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section 
+$stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section, h.hall_name, h.room_number
                         FROM attendance_sessions ats
                         JOIN classes c ON ats.class_id = c.class_id
+                        JOIN seminar_halls h ON ats.hall_id = h.hall_id
                         WHERE ats.staff_id = ?
                         ORDER BY ats.start_time DESC
                         LIMIT 5");
@@ -98,6 +103,18 @@ closeDBConnection($conn);
                     </div>
                 </div>
                 
+                <div class="form-group">
+                    <label for="hall_id">Select Seminar Hall</label>
+                    <select id="hall_id" name="hall_id" required>
+                        <option value="">Choose a seminar hall...</option>
+                        <?php foreach ($halls as $hall): ?>
+                            <option value="<?php echo $hall['hall_id']; ?>">
+                                <?php echo htmlspecialchars($hall['hall_name'] . ' (Room ' . $hall['room_number'] . ') - Capacity: ' . $hall['capacity']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
                 <button type="submit" class="btn btn-primary btn-large">
                     ▶️ Start Attendance Session
                 </button>
@@ -115,7 +132,8 @@ closeDBConnection($conn);
                             <div class="session-info">
                                 <h3><?php echo htmlspecialchars($session['session_name']); ?></h3>
                                 <p class="session-meta">
-                                    <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section']); ?>
+                                    <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section']); ?> | 
+                                    <?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?>
                                 </p>
                                 <p class="session-time">
                                     <?php echo date('M d, Y h:i A', strtotime($session['start_time'])); ?>
