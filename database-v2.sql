@@ -289,3 +289,355 @@ INSERT INTO seminar_seats (hall_id, seat_number, row_number, seat_position, qr_c
 (3, 'R5-S13', 5, 13, 'QR_H3_R5S13'), (3, 'R5-S14', 5, 14, 'QR_H3_R5S14'), (3, 'R5-S15', 5, 15, 'QR_H3_R5S15'),
 (3, 'R5-S16', 5, 16, 'QR_H3_R5S16'), (3, 'R5-S17', 5, 17, 'QR_H3_R5S17'), (3, 'R5-S18', 5, 18, 'QR_H3_R5S18'),
 (3, 'R5-S19', 5, 19, 'QR_H3_R5S19'), (3, 'R5-S20', 5, 20, 'QR_H3_R5S20');
+
+-- UPDATE SEAT NAMES AND QR CODES
+
+-- SEMINAR HALL 1 (hall_id = 1)
+-- Row 1: A1 to A21
+UPDATE seminar_seats SET seat_number = 'A1', qr_code = 'A1_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'A2', qr_code = 'A2_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'A3', qr_code = 'A3_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'A4', qr_code = 'A4_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'A5', qr_code = 'A5_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'A6', qr_code = 'A6_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'A7', qr_code = 'A7_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'A8', qr_code = 'A8_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'A9', qr_code = 'A9_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'A10', qr_code = 'A10_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'A11', qr_code = 'A11_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'A12', qr_code = 'A12_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'A13', qr_code = 'A13_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'A14', qr_code = 'A14_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'A15', qr_code = 'A15_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'A16', qr_code = 'A16_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'A17', qr_code = 'A17_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'A18', qr_code = 'A18_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'A19', qr_code = 'A19_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'A20', qr_code = 'A20_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'A21', qr_code = 'A21_H1' WHERE hall_id = 1 AND row_number = 1 AND seat_position = 21;
+
+-- Row 2: B1 to B21
+UPDATE seminar_seats SET seat_number = 'B1', qr_code = 'B1_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'B2', qr_code = 'B2_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'B3', qr_code = 'B3_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'B4', qr_code = 'B4_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'B5', qr_code = 'B5_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'B6', qr_code = 'B6_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'B7', qr_code = 'B7_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'B8', qr_code = 'B8_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'B9', qr_code = 'B9_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'B10', qr_code = 'B10_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'B11', qr_code = 'B11_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'B12', qr_code = 'B12_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'B13', qr_code = 'B13_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'B14', qr_code = 'B14_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'B15', qr_code = 'B15_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'B16', qr_code = 'B16_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'B17', qr_code = 'B17_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'B18', qr_code = 'B18_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'B19', qr_code = 'B19_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'B20', qr_code = 'B20_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'B21', qr_code = 'B21_H1' WHERE hall_id = 1 AND row_number = 2 AND seat_position = 21;
+
+-- Row 3: C1 to C21
+UPDATE seminar_seats SET seat_number = 'C1', qr_code = 'C1_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'C2', qr_code = 'C2_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'C3', qr_code = 'C3_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'C4', qr_code = 'C4_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'C5', qr_code = 'C5_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'C6', qr_code = 'C6_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'C7', qr_code = 'C7_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'C8', qr_code = 'C8_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'C9', qr_code = 'C9_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'C10', qr_code = 'C10_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'C11', qr_code = 'C11_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'C12', qr_code = 'C12_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'C13', qr_code = 'C13_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'C14', qr_code = 'C14_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'C15', qr_code = 'C15_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'C16', qr_code = 'C16_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'C17', qr_code = 'C17_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'C18', qr_code = 'C18_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'C19', qr_code = 'C19_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'C20', qr_code = 'C20_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'C21', qr_code = 'C21_H1' WHERE hall_id = 1 AND row_number = 3 AND seat_position = 21;
+
+-- Row 4: D1 to D21
+UPDATE seminar_seats SET seat_number = 'D1', qr_code = 'D1_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'D2', qr_code = 'D2_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'D3', qr_code = 'D3_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'D4', qr_code = 'D4_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'D5', qr_code = 'D5_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'D6', qr_code = 'D6_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'D7', qr_code = 'D7_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'D8', qr_code = 'D8_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'D9', qr_code = 'D9_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'D10', qr_code = 'D10_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'D11', qr_code = 'D11_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'D12', qr_code = 'D12_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'D13', qr_code = 'D13_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'D14', qr_code = 'D14_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'D15', qr_code = 'D15_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'D16', qr_code = 'D16_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'D17', qr_code = 'D17_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'D18', qr_code = 'D18_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'D19', qr_code = 'D19_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'D20', qr_code = 'D20_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'D21', qr_code = 'D21_H1' WHERE hall_id = 1 AND row_number = 4 AND seat_position = 21;
+
+-- Row 5: E1 to E20
+UPDATE seminar_seats SET seat_number = 'E1', qr_code = 'E1_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'E2', qr_code = 'E2_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'E3', qr_code = 'E3_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'E4', qr_code = 'E4_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'E5', qr_code = 'E5_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'E6', qr_code = 'E6_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'E7', qr_code = 'E7_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'E8', qr_code = 'E8_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'E9', qr_code = 'E9_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'E10', qr_code = 'E10_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'E11', qr_code = 'E11_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'E12', qr_code = 'E12_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'E13', qr_code = 'E13_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'E14', qr_code = 'E14_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'E15', qr_code = 'E15_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'E16', qr_code = 'E16_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'E17', qr_code = 'E17_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'E18', qr_code = 'E18_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'E19', qr_code = 'E19_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'E20', qr_code = 'E20_H1' WHERE hall_id = 1 AND row_number = 5 AND seat_position = 20;
+
+-- =====================================================
+-- SEMINAR HALL 2 (hall_id = 2)
+-- Row 1: A1 to A21
+UPDATE seminar_seats SET seat_number = 'A1', qr_code = 'A1_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'A2', qr_code = 'A2_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'A3', qr_code = 'A3_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'A4', qr_code = 'A4_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'A5', qr_code = 'A5_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'A6', qr_code = 'A6_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'A7', qr_code = 'A7_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'A8', qr_code = 'A8_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'A9', qr_code = 'A9_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'A10', qr_code = 'A10_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'A11', qr_code = 'A11_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'A12', qr_code = 'A12_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'A13', qr_code = 'A13_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'A14', qr_code = 'A14_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'A15', qr_code = 'A15_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'A16', qr_code = 'A16_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'A17', qr_code = 'A17_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'A18', qr_code = 'A18_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'A19', qr_code = 'A19_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'A20', qr_code = 'A20_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'A21', qr_code = 'A21_H2' WHERE hall_id = 2 AND row_number = 1 AND seat_position = 21;
+
+-- Row 2: B1 to B21
+UPDATE seminar_seats SET seat_number = 'B1', qr_code = 'B1_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'B2', qr_code = 'B2_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'B3', qr_code = 'B3_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'B4', qr_code = 'B4_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'B5', qr_code = 'B5_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'B6', qr_code = 'B6_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'B7', qr_code = 'B7_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'B8', qr_code = 'B8_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'B9', qr_code = 'B9_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'B10', qr_code = 'B10_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'B11', qr_code = 'B11_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'B12', qr_code = 'B12_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'B13', qr_code = 'B13_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'B14', qr_code = 'B14_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'B15', qr_code = 'B15_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'B16', qr_code = 'B16_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'B17', qr_code = 'B17_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'B18', qr_code = 'B18_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'B19', qr_code = 'B19_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'B20', qr_code = 'B20_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'B21', qr_code = 'B21_H2' WHERE hall_id = 2 AND row_number = 2 AND seat_position = 21;
+
+-- Row 3: C1 to C21
+UPDATE seminar_seats SET seat_number = 'C1', qr_code = 'C1_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'C2', qr_code = 'C2_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'C3', qr_code = 'C3_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'C4', qr_code = 'C4_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'C5', qr_code = 'C5_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'C6', qr_code = 'C6_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'C7', qr_code = 'C7_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'C8', qr_code = 'C8_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'C9', qr_code = 'C9_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'C10', qr_code = 'C10_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'C11', qr_code = 'C11_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'C12', qr_code = 'C12_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'C13', qr_code = 'C13_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'C14', qr_code = 'C14_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'C15', qr_code = 'C15_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'C16', qr_code = 'C16_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'C17', qr_code = 'C17_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'C18', qr_code = 'C18_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'C19', qr_code = 'C19_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'C20', qr_code = 'C20_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'C21', qr_code = 'C21_H2' WHERE hall_id = 2 AND row_number = 3 AND seat_position = 21;
+
+-- Row 4: D1 to D21
+UPDATE seminar_seats SET seat_number = 'D1', qr_code = 'D1_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'D2', qr_code = 'D2_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'D3', qr_code = 'D3_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'D4', qr_code = 'D4_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'D5', qr_code = 'D5_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'D6', qr_code = 'D6_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'D7', qr_code = 'D7_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'D8', qr_code = 'D8_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'D9', qr_code = 'D9_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'D10', qr_code = 'D10_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'D11', qr_code = 'D11_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'D12', qr_code = 'D12_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'D13', qr_code = 'D13_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'D14', qr_code = 'D14_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'D15', qr_code = 'D15_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'D16', qr_code = 'D16_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'D17', qr_code = 'D17_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'D18', qr_code = 'D18_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'D19', qr_code = 'D19_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'D20', qr_code = 'D20_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'D21', qr_code = 'D21_H2' WHERE hall_id = 2 AND row_number = 4 AND seat_position = 21;
+
+-- Row 5: E1 to E20
+UPDATE seminar_seats SET seat_number = 'E1', qr_code = 'E1_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'E2', qr_code = 'E2_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'E3', qr_code = 'E3_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'E4', qr_code = 'E4_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'E5', qr_code = 'E5_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'E6', qr_code = 'E6_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'E7', qr_code = 'E7_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'E8', qr_code = 'E8_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'E9', qr_code = 'E9_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'E10', qr_code = 'E10_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'E11', qr_code = 'E11_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'E12', qr_code = 'E12_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'E13', qr_code = 'E13_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'E14', qr_code = 'E14_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'E15', qr_code = 'E15_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'E16', qr_code = 'E16_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'E17', qr_code = 'E17_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'E18', qr_code = 'E18_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'E19', qr_code = 'E19_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'E20', qr_code = 'E20_H2' WHERE hall_id = 2 AND row_number = 5 AND seat_position = 20;
+
+-- =====================================================
+-- SEMINAR HALL 3 (hall_id = 3)
+-- Row 1: A1 to A21
+UPDATE seminar_seats SET seat_number = 'A1', qr_code = 'A1_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'A2', qr_code = 'A2_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'A3', qr_code = 'A3_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'A4', qr_code = 'A4_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'A5', qr_code = 'A5_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'A6', qr_code = 'A6_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'A7', qr_code = 'A7_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'A8', qr_code = 'A8_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'A9', qr_code = 'A9_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'A10', qr_code = 'A10_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'A11', qr_code = 'A11_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'A12', qr_code = 'A12_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'A13', qr_code = 'A13_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'A14', qr_code = 'A14_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'A15', qr_code = 'A15_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'A16', qr_code = 'A16_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'A17', qr_code = 'A17_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'A18', qr_code = 'A18_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'A19', qr_code = 'A19_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'A20', qr_code = 'A20_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'A21', qr_code = 'A21_H3' WHERE hall_id = 3 AND row_number = 1 AND seat_position = 21;
+
+-- Row 2: B1 to B21
+UPDATE seminar_seats SET seat_number = 'B1', qr_code = 'B1_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'B2', qr_code = 'B2_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'B3', qr_code = 'B3_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'B4', qr_code = 'B4_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'B5', qr_code = 'B5_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'B6', qr_code = 'B6_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'B7', qr_code = 'B7_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'B8', qr_code = 'B8_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'B9', qr_code = 'B9_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'B10', qr_code = 'B10_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'B11', qr_code = 'B11_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'B12', qr_code = 'B12_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'B13', qr_code = 'B13_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'B14', qr_code = 'B14_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'B15', qr_code = 'B15_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'B16', qr_code = 'B16_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'B17', qr_code = 'B17_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'B18', qr_code = 'B18_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'B19', qr_code = 'B19_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'B20', qr_code = 'B20_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'B21', qr_code = 'B21_H3' WHERE hall_id = 3 AND row_number = 2 AND seat_position = 21;
+
+-- Row 3: C1 to C21
+UPDATE seminar_seats SET seat_number = 'C1', qr_code = 'C1_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'C2', qr_code = 'C2_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'C3', qr_code = 'C3_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'C4', qr_code = 'C4_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'C5', qr_code = 'C5_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'C6', qr_code = 'C6_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'C7', qr_code = 'C7_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'C8', qr_code = 'C8_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'C9', qr_code = 'C9_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'C10', qr_code = 'C10_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'C11', qr_code = 'C11_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'C12', qr_code = 'C12_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'C13', qr_code = 'C13_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'C14', qr_code = 'C14_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'C15', qr_code = 'C15_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'C16', qr_code = 'C16_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'C17', qr_code = 'C17_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'C18', qr_code = 'C18_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'C19', qr_code = 'C19_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'C20', qr_code = 'C20_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'C21', qr_code = 'C21_H3' WHERE hall_id = 3 AND row_number = 3 AND seat_position = 21;
+
+-- Row 4: D1 to D21
+UPDATE seminar_seats SET seat_number = 'D1', qr_code = 'D1_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'D2', qr_code = 'D2_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'D3', qr_code = 'D3_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'D4', qr_code = 'D4_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'D5', qr_code = 'D5_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'D6', qr_code = 'D6_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'D7', qr_code = 'D7_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'D8', qr_code = 'D8_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'D9', qr_code = 'D9_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'D10', qr_code = 'D10_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'D11', qr_code = 'D11_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'D12', qr_code = 'D12_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'D13', qr_code = 'D13_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'D14', qr_code = 'D14_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'D15', qr_code = 'D15_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'D16', qr_code = 'D16_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'D17', qr_code = 'D17_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'D18', qr_code = 'D18_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'D19', qr_code = 'D19_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'D20', qr_code = 'D20_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 20;
+UPDATE seminar_seats SET seat_number = 'D21', qr_code = 'D21_H3' WHERE hall_id = 3 AND row_number = 4 AND seat_position = 21;
+
+-- Row 5: E1 to E20
+UPDATE seminar_seats SET seat_number = 'E1', qr_code = 'E1_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 1;
+UPDATE seminar_seats SET seat_number = 'E2', qr_code = 'E2_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 2;
+UPDATE seminar_seats SET seat_number = 'E3', qr_code = 'E3_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 3;
+UPDATE seminar_seats SET seat_number = 'E4', qr_code = 'E4_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 4;
+UPDATE seminar_seats SET seat_number = 'E5', qr_code = 'E5_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 5;
+UPDATE seminar_seats SET seat_number = 'E6', qr_code = 'E6_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 6;
+UPDATE seminar_seats SET seat_number = 'E7', qr_code = 'E7_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 7;
+UPDATE seminar_seats SET seat_number = 'E8', qr_code = 'E8_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 8;
+UPDATE seminar_seats SET seat_number = 'E9', qr_code = 'E9_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 9;
+UPDATE seminar_seats SET seat_number = 'E10', qr_code = 'E10_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 10;
+UPDATE seminar_seats SET seat_number = 'E11', qr_code = 'E11_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 11;
+UPDATE seminar_seats SET seat_number = 'E12', qr_code = 'E12_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 12;
+UPDATE seminar_seats SET seat_number = 'E13', qr_code = 'E13_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 13;
+UPDATE seminar_seats SET seat_number = 'E14', qr_code = 'E14_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 14;
+UPDATE seminar_seats SET seat_number = 'E15', qr_code = 'E15_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 15;
+UPDATE seminar_seats SET seat_number = 'E16', qr_code = 'E16_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 16;
+UPDATE seminar_seats SET seat_number = 'E17', qr_code = 'E17_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 17;
+UPDATE seminar_seats SET seat_number = 'E18', qr_code = 'E18_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 18;
+UPDATE seminar_seats SET seat_number = 'E19', qr_code = 'E19_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 19;
+UPDATE seminar_seats SET seat_number = 'E20', qr_code = 'E20_H3' WHERE hall_id = 3 AND row_number = 5 AND seat_position = 20;
+
+-- Add prefix to existing values
+UPDATE students SET usn_number = CONCAT('1MJ23', usn_number);
