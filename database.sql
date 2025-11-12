@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS staff (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     department VARCHAR(100),
+    session_token VARCHAR(255) NULL,
+    last_login TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -29,6 +31,8 @@ CREATE TABLE IF NOT EXISTS students (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     class_id INT,
+    session_token VARCHAR(255) NULL,
+    last_login TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (class_id) REFERENCES classes(class_id)
 );
@@ -76,9 +80,9 @@ CREATE TABLE IF NOT EXISTS attendance_records (
 -- Insert Sample Data
 
 -- Insert Staff
-INSERT INTO staff (staff_name, email, password, department) VALUES
-('Prof. Rekha P', 'rekha.p@mvj.edu', 'Rekha@123', 'Computer Science'),
-('Prof. Arfa Bhandari', 'arfa@mvj.edu', 'Arfa@456', 'Computer Science');
+INSERT INTO staff (staff_name, email, password, department, session_token, last_login) VALUES
+('Prof. Rekha P', 'rekha.p@mvj.edu', 'Rekha@123', 'Computer Science', NULL, NULL),
+('Prof. Arfa Bhandari', 'arfa@mvj.edu', 'Arfa@456', 'Computer Science', NULL, NULL);
 
 -- Insert Classes (Computer Science A, B, C, D)
 INSERT INTO classes (class_name, section, year) VALUES
@@ -87,38 +91,38 @@ INSERT INTO classes (class_name, section, year) VALUES
 ('Computer Science', 'C', 2024),
 ('Computer Science', 'D', 2024);
 
--- Insert Students
+-- Insert Students with session_token and last_login columns
 -- Section A (5 students)
-INSERT INTO students (roll_number, student_name, email, password, class_id) VALUES
-('CS005', 'Abhishek A', 'abhishek@stu.mvj.edu', 'Abhishek@005', 1),
-('CS008', 'Aditya Suresh', 'aditya@stu.mvj.edu', 'Aditya@008', 1),
-('CS012', 'Alvin Sonny', 'alvin@stu.mvj.edu', 'Alvin@012', 1),
-('CS015', 'Ananya Sanjiv', 'ananya@stu.mvj.edu', 'Ananya@015', 1),
-('CS018', 'Arjun Menon', 'arjun@stu.mvj.edu', 'Arjun@018', 1);
+INSERT INTO students (roll_number, student_name, email, password, class_id, session_token, last_login) VALUES
+('CS005', 'Abhishek A', 'abhishek@stu.mvj.edu', 'Abhishek@005', 1, NULL, NULL),
+('CS008', 'Aditya Suresh', 'aditya@stu.mvj.edu', 'Aditya@008', 1, NULL, NULL),
+('CS012', 'Alvin Sonny', 'alvin@stu.mvj.edu', 'Alvin@012', 1, NULL, NULL),
+('CS015', 'Ananya Sanjiv', 'ananya@stu.mvj.edu', 'Ananya@015', 1, NULL, NULL),
+('CS018', 'Arjun Menon', 'arjun@stu.mvj.edu', 'Arjun@018', 1, NULL, NULL);
 
 -- Section B (5 students)
-INSERT INTO students (roll_number, student_name, email, password, class_id) VALUES
-('CS058', 'Ganesha Thejaswi', 'ganesh@stu.mvj.edu', 'Ganesha@058', 2),
-('CS061', 'Gowri Krishnan Nair', 'gowri@stu.mvj.edu', 'Gowri@061', 2),
-('CS064', 'Harsha Kumar', 'harsha@stu.mvj.edu', 'Harsha@064', 2),
-('CS067', 'Ishaan Reddy', 'ishaan@stu.mvj.edu', 'Ishaan@067', 2),
-('CS070', 'Jaya Prakash', 'jaya@stu.mvj.edu', 'Jaya@070', 2);
+INSERT INTO students (roll_number, student_name, email, password, class_id, session_token, last_login) VALUES
+('CS058', 'Ganesha Thejaswi', 'ganesh@stu.mvj.edu', 'Ganesha@058', 2, NULL, NULL),
+('CS061', 'Gowri Krishnan Nair', 'gowri@stu.mvj.edu', 'Gowri@061', 2, NULL, NULL),
+('CS064', 'Harsha Kumar', 'harsha@stu.mvj.edu', 'Harsha@064', 2, NULL, NULL),
+('CS067', 'Ishaan Reddy', 'ishaan@stu.mvj.edu', 'Ishaan@067', 2, NULL, NULL),
+('CS070', 'Jaya Prakash', 'jaya@stu.mvj.edu', 'Jaya@070', 2, NULL, NULL);
 
 -- Section C (5 students)
-INSERT INTO students (roll_number, student_name, email, password, class_id) VALUES
-('CS101', 'Karthik Sharma', 'karthik@stu.mvj.edu', 'Karthik@101', 3),
-('CS104', 'Lakshmi Iyer', 'lakshmi@stu.mvj.edu', 'Lakshmi@104', 3),
-('CS107', 'Manoj Kumar', 'manoj@stu.mvj.edu', 'Manoj@107', 3),
-('CS110', 'Nisha Patel', 'nisha@stu.mvj.edu', 'Nisha@110', 3),
-('CS113', 'Omkar Singh', 'omkar@stu.mvj.edu', 'Omkar@113', 3);
+INSERT INTO students (roll_number, student_name, email, password, class_id, session_token, last_login) VALUES
+('CS101', 'Karthik Sharma', 'karthik@stu.mvj.edu', 'Karthik@101', 3, NULL, NULL),
+('CS104', 'Lakshmi Iyer', 'lakshmi@stu.mvj.edu', 'Lakshmi@104', 3, NULL, NULL),
+('CS107', 'Manoj Kumar', 'manoj@stu.mvj.edu', 'Manoj@107', 3, NULL, NULL),
+('CS110', 'Nisha Patel', 'nisha@stu.mvj.edu', 'Nisha@110', 3, NULL, NULL),
+('CS113', 'Omkar Singh', 'omkar@stu.mvj.edu', 'Omkar@113', 3, NULL, NULL);
 
 -- Section D (5 students)
-INSERT INTO students (roll_number, student_name, email, password, class_id) VALUES
-('CS145', 'Priya Ramesh', 'priya@stu.mvj.edu', 'Priya@145', 4),
-('CS148', 'Rahul Verma', 'rahul@stu.mvj.edu', 'Rahul@148', 4),
-('CS151', 'Sneha Desai', 'sneha@stu.mvj.edu', 'Sneha@151', 4),
-('CS154', 'Tarun Gupta', 'tarun@stu.mvj.edu', 'Tarun@154', 4),
-('CS157', 'Usha Nair', 'usha@stu.mvj.edu', 'Usha@157', 4);
+INSERT INTO students (roll_number, student_name, email, password, class_id, session_token, last_login) VALUES
+('CS145', 'Priya Ramesh', 'priya@stu.mvj.edu', 'Priya@145', 4, NULL, NULL),
+('CS148', 'Rahul Verma', 'rahul@stu.mvj.edu', 'Rahul@148', 4, NULL, NULL),
+('CS151', 'Sneha Desai', 'sneha@stu.mvj.edu', 'Sneha@151', 4, NULL, NULL),
+('CS154', 'Tarun Gupta', 'tarun@stu.mvj.edu', 'Tarun@154', 4, NULL, NULL),
+('CS157', 'Usha Nair', 'usha@stu.mvj.edu', 'Usha@157', 4, NULL, NULL);
 
 -- Insert Auditorium Seats (10 rows x 10 seats = 100 seats)
 INSERT INTO auditorium_seats (seat_number, row_number, seat_position, qr_code) VALUES
