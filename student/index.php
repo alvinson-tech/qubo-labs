@@ -12,11 +12,10 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
-closeDBConnection($conn);
 
 // Check if session token matches
 if (!$user || $user['session_token'] !== $_SESSION['session_token']) {
-    // Session invalid - force logout
+    closeDBConnection($conn);
     session_unset();
     session_destroy();
     header('Location: ../index.php?error=session_expired');
@@ -49,7 +48,7 @@ $active_session = getActiveSession($class_id);
             <h1>Attendance Dashboard</h1>
         </div>
         
-                    <?php if ($active_session): ?>
+        <?php if ($active_session): ?>
             <?php
             $has_marked = hasMarkedAttendance($active_session['session_id'], $student_id);
             $attendance_record = getStudentAttendanceRecord($active_session['session_id'], $student_id);
@@ -81,6 +80,19 @@ $active_session = getActiveSession($class_id);
                         <h3>⚠️ Not Verified</h3>
                         <p>You marked "No Neighbours" - Your attendance is recorded but not verified.</p>
                         <p class="info-text">Your attendance will appear as "Not Verified" in the report.</p>
+                        <div class="attendance-details">
+                            <p><strong>Seat:</strong> <?php 
+                                // FIXED: Use seminar_seats instead of auditorium_seats
+                                $stmt = $conn->prepare("SELECT seat_number FROM seminar_seats WHERE seat_id = ?");
+                                $stmt->bind_param("i", $attendance_record['seat_id']);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                $seat = $result->fetch_assoc();
+                                echo htmlspecialchars($seat['seat_number']);
+                                $stmt->close();
+                            ?></p>
+                            <p><strong>Time:</strong> <?php echo date('h:i A', strtotime($attendance_record['scanned_at'])); ?></p>
+                        </div>
                     </div>
                 <?php elseif ($attendance_record['status'] === 'verified'): ?>
                     <div class="status-message success">
@@ -92,15 +104,14 @@ $active_session = getActiveSession($class_id);
                         <p class="info-text">Your verification code (for your neighbor's reference)</p>
                         <div class="attendance-details">
                             <p><strong>Seat:</strong> <?php 
-                                $conn = getDBConnection();
-                                $stmt = $conn->prepare("SELECT seat_number FROM auditorium_seats WHERE seat_id = ?");
+                                // FIXED: Use seminar_seats instead of auditorium_seats
+                                $stmt = $conn->prepare("SELECT seat_number FROM seminar_seats WHERE seat_id = ?");
                                 $stmt->bind_param("i", $attendance_record['seat_id']);
                                 $stmt->execute();
                                 $result = $stmt->get_result();
                                 $seat = $result->fetch_assoc();
                                 echo htmlspecialchars($seat['seat_number']);
                                 $stmt->close();
-                                closeDBConnection($conn);
                             ?></p>
                             <p><strong>Time:</strong> <?php echo date('h:i A', strtotime($attendance_record['verified_at'])); ?></p>
                         </div>
@@ -116,6 +127,8 @@ $active_session = getActiveSession($class_id);
             </div>
         <?php endif; ?>
     </div>
+    
+    <?php closeDBConnection($conn); ?>
     
     <script>
         // Auto-refresh every 10 seconds to check for new sessions

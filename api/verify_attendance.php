@@ -58,9 +58,9 @@ if (empty($neighbor_code)) {
     exit();
 }
 
-// Get current student's seat information
+// FIXED: Get current student's seat information using seminar_seats
 $stmt = $conn->prepare("SELECT s.row_number, s.seat_position FROM attendance_records ar 
-                        JOIN auditorium_seats s ON ar.seat_id = s.seat_id 
+                        JOIN seminar_seats s ON ar.seat_id = s.seat_id 
                         WHERE ar.record_id = ?");
 $stmt->bind_param("i", $my_record['record_id']);
 $stmt->execute();
@@ -68,10 +68,16 @@ $result = $stmt->get_result();
 $my_seat = $result->fetch_assoc();
 $stmt->close();
 
-// Find the neighbor with this verification code in the same row
+if (!$my_seat) {
+    closeDBConnection($conn);
+    echo json_encode(['success' => false, 'message' => 'Could not find your seat information']);
+    exit();
+}
+
+// FIXED: Find the neighbor with this verification code in the same row using seminar_seats
 $stmt = $conn->prepare("SELECT ar.*, s.row_number, s.seat_position 
                         FROM attendance_records ar
-                        JOIN auditorium_seats s ON ar.seat_id = s.seat_id
+                        JOIN seminar_seats s ON ar.seat_id = s.seat_id
                         WHERE ar.session_id = ? AND ar.verification_code = ? AND ar.student_id != ?");
 $stmt->bind_param("isi", $session_id, $neighbor_code, $student_id);
 $stmt->execute();
