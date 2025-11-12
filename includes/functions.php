@@ -1,0 +1,129 @@
+<?php
+require_once __DIR__ . '/../config/database.php';
+
+// Generate random 4-character alphanumeric code
+function generateVerificationCode() {
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $code = '';
+    for ($i = 0; $i < 4; $i++) {
+        $code .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $code;
+}
+
+// Check if there's an active session for a class
+function getActiveSession($class_id) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM attendance_sessions WHERE class_id = ? AND status = 'active' ORDER BY start_time DESC LIMIT 1");
+    $stmt->bind_param("i", $class_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $session = $result->fetch_assoc();
+    $stmt->close();
+    closeDBConnection($conn);
+    return $session;
+}
+
+// Get seat information by QR code
+function getSeatByQRCode($qr_code) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM auditorium_seats WHERE qr_code = ?");
+    $stmt->bind_param("s", $qr_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $seat = $result->fetch_assoc();
+    $stmt->close();
+    closeDBConnection($conn);
+    return $seat;
+}
+
+// Check if student already marked attendance in this session
+function hasMarkedAttendance($session_id, $student_id) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM attendance_records WHERE session_id = ? AND student_id = ?");
+    $stmt->bind_param("ii", $session_id, $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $exists = $result->num_rows > 0;
+    $stmt->close();
+    closeDBConnection($conn);
+    return $exists;
+}
+
+// Get student's attendance record for verification
+function getStudentAttendanceRecord($session_id, $student_id) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM attendance_records WHERE session_id = ? AND student_id = ?");
+    $stmt->bind_param("ii", $session_id, $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $record = $result->fetch_assoc();
+    $stmt->close();
+    closeDBConnection($conn);
+    return $record;
+}
+
+// Get live attendance data for staff view
+function getLiveAttendanceData($session_id) {
+    $conn = getDBConnection();
+    $query = "SELECT ar.*, s.seat_number, s.row_number, s.seat_position, 
+              st.student_name, st.roll_number
+              FROM attendance_records ar
+              JOIN auditorium_seats s ON ar.seat_id = s.seat_id
+              JOIN students st ON ar.student_id = st.student_id
+              WHERE ar.session_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $session_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+    $stmt->close();
+    closeDBConnection($conn);
+    return $data;
+}
+
+// Get all attendance records for a session (for PDF)
+function getAttendanceReport($session_id) {
+    $conn = getDBConnection();
+    $query = "SELECT ar.*, s.seat_number, st.student_name, st.roll_number,
+              verifier.student_name as verifier_name, verifier.roll_number as verifier_roll
+              FROM attendance_records ar
+              JOIN auditorium_seats s ON ar.seat_id = s.seat_id
+              JOIN students st ON ar.student_id = st.student_id
+              LEFT JOIN students verifier ON ar.verified_by_student_id = verifier.student_id
+              WHERE ar.session_id = ?
+              ORDER BY ar.scanned_at";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $session_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+    $stmt->close();
+    closeDBConnection($conn);
+    return $data;
+}
+
+// Get session details
+function getSessionDetails($session_id) {
+    $conn = getDBConnection();
+    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section
+              FROM attendance_sessions ats
+              JOIN staff st ON ats.staff_id = st.staff_id
+              JOIN classes c ON ats.class_id = c.class_id
+              WHERE ats.session_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $session_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $session = $result->fetch_assoc();
+    $stmt->close();
+    closeDBConnection($conn);
+    return $session;
+}
+?>
