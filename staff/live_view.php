@@ -25,6 +25,62 @@ if ($session['status'] !== 'active') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Session - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .manual-verify-btns {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .btn-verify,
+        .btn-reject {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-verify {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-verify:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        .btn-verify:disabled,
+        .btn-reject:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .verified-text {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .na-text {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -77,16 +133,17 @@ if ($session['status'] !== 'active') {
                 <table class="attendance-table">
                     <thead>
                         <tr>
-                            <th style="width: 8%;">S.No</th>
-                            <th style="width: 18%;">Roll Number</th>
-                            <th style="width: 28%;">Student Name</th>
-                            <th style="width: 15%;">Seat No.</th>
+                            <th style="width: 6%;">S.No</th>
+                            <th style="width: 16%;">Roll Number</th>
+                            <th style="width: 25%;">Student Name</th>
+                            <th style="width: 12%;">Seat No.</th>
                             <th style="width: 15%;">Status</th>
+                            <th style="width: 16%;">Manual Verify</th>
                         </tr>
                     </thead>
                     <tbody id="student-list-body">
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #999; padding: 20px;">
+                            <td colspan="6" style="text-align: center; color: #999; padding: 20px;">
                                 No students have marked attendance yet
                             </td>
                         </tr>
@@ -167,7 +224,7 @@ if ($session['status'] !== 'active') {
             });
         }
         
-        // Update statistics and student table
+        // Update statistics
         function updateStats(stats) {
             document.getElementById('total-students').textContent = stats.total_students;
             document.getElementById('total-marked').textContent = stats.total_marked;
@@ -181,7 +238,7 @@ if ($session['status'] !== 'active') {
             tbody.innerHTML = '';
             
             if (completeList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No students found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No students found</td></tr>';
                 return;
             }
             
@@ -190,30 +247,77 @@ if ($session['status'] !== 'active') {
                 
                 let statusBadge = '';
                 let statusClass = '';
+                let manualVerifyCol = '';
                 
                 if (!record.marked) {
                     statusBadge = '<span class="status-badge badge-not-marked">○ Not Marked</span>';
                     statusClass = 'status-not-marked';
+                    manualVerifyCol = '<span class="na-text">N/A</span>';
                 } else if (record.status === 'verified') {
                     statusBadge = '<span class="status-badge badge-verified">✓ Verified</span>';
                     statusClass = 'status-verified';
+                    manualVerifyCol = '<span class="verified-text">✓ Verified</span>';
                 } else if (record.no_neighbours == 1) {
                     statusBadge = '<span class="status-badge badge-not-verified">⚠ Not Verified</span>';
                     statusClass = 'status-not-verified';
+                    manualVerifyCol = `
+                        <div class="manual-verify-btns">
+                            <button class="btn-verify" onclick="manualVerify(${record.student_id}, true)" title="Approve">✓</button>
+                            <button class="btn-reject" onclick="manualVerify(${record.student_id}, false)" title="Reject">✗</button>
+                        </div>
+                    `;
                 } else {
                     statusBadge = '<span class="status-badge badge-pending">⏳ Pending</span>';
                     statusClass = 'status-pending';
+                    manualVerifyCol = '<span class="na-text">N/A</span>';
                 }
                 
                 row.className = statusClass;
                 row.innerHTML = `
-                    <td style="font-weight: 700;">${index + 1}</td>
+                    <td style="font-weight: 700; text-align: center;">${index + 1}</td>
                     <td style="font-weight: 600;">${record.roll_number}</td>
                     <td>${record.student_name}</td>
-                    <td style="text-align: center; font-weight: 700; color: #19A7CE;">${record.seat_number}</td>
+                    <td style="text-align: center; font-weight: 700; color: #2563eb;">${record.seat_number}</td>
                     <td>${statusBadge}</td>
+                    <td style="text-align: center;">${manualVerifyCol}</td>
                 `;
                 tbody.appendChild(row);
+            });
+        }
+        
+        // Manual verification function
+        function manualVerify(studentId, approve) {
+            const action = approve ? 'approve' : 'reject';
+            const confirmMsg = approve 
+                ? 'Are you sure you want to approve this student\'s attendance?' 
+                : 'Are you sure you want to reject this student\'s attendance?';
+            
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+            
+            fetch('../api/manual_verify.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    student_id: studentId,
+                    action: action
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    updateLiveData(); // Refresh the data
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error processing manual verification. Please try again.');
             });
         }
         
