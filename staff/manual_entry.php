@@ -113,6 +113,14 @@ closeDBConnection($conn);
             background: #f8fafc;
         }
         
+        .student-item.present {
+            background: #f0fdf4;
+        }
+        
+        .student-item.present:hover {
+            background: #dcfce7;
+        }
+        
         .student-item.absent {
             background: #fef2f2;
         }
@@ -164,37 +172,39 @@ closeDBConnection($conn);
             cursor: pointer;
             transition: all 0.2s;
             font-size: 24px;
+            background: white;
         }
         
-        .toggle-btn.present {
-            background: #d1fae5;
+        .toggle-btn.present-btn {
             border-color: #10b981;
             color: #065f46;
         }
         
-        .toggle-btn.present:hover {
+        .toggle-btn.present-btn.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .toggle-btn.present-btn:hover {
             background: #10b981;
             color: white;
             transform: scale(1.1);
         }
         
-        .toggle-btn.absent {
-            background: #fee2e2;
+        .toggle-btn.absent-btn {
             border-color: #ef4444;
             color: #991b1b;
         }
         
-        .toggle-btn.absent:hover {
+        .toggle-btn.absent-btn.active {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .toggle-btn.absent-btn:hover {
             background: #ef4444;
             color: white;
             transform: scale(1.1);
-        }
-        
-        .toggle-btn.inactive {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-            color: #94a3b8;
-            opacity: 0.5;
         }
         
         .stats-bar {
@@ -303,17 +313,17 @@ closeDBConnection($conn);
         <div class="students-list" id="students-list">
             <?php $sno = 1; foreach ($students as $student): ?>
                 <?php $is_present = in_array($student['student_id'], $marked_students); ?>
-                <div class="student-item <?php echo $is_present ? '' : 'absent'; ?>" data-student-id="<?php echo $student['student_id']; ?>">
+                <div class="student-item <?php echo $is_present ? 'present' : 'absent'; ?>" data-student-id="<?php echo $student['student_id']; ?>">
                     <div class="student-info">
                         <span class="student-number"><?php echo $sno++; ?></span>
                         <span class="student-usn"><?php echo htmlspecialchars($student['usn_number']); ?></span>
                         <span class="student-name"><?php echo htmlspecialchars($student['student_name']); ?></span>
                     </div>
                     <div class="attendance-toggle">
-                        <button class="toggle-btn present <?php echo $is_present ? '' : 'inactive'; ?>" 
+                        <button class="toggle-btn present-btn <?php echo $is_present ? 'active' : ''; ?>" 
                                 onclick="markPresent(<?php echo $student['student_id']; ?>)" 
                                 title="Mark Present">✓</button>
-                        <button class="toggle-btn absent <?php echo !$is_present ? '' : 'inactive'; ?>" 
+                        <button class="toggle-btn absent-btn <?php echo !$is_present ? 'active' : ''; ?>" 
                                 onclick="markAbsent(<?php echo $student['student_id']; ?>)" 
                                 title="Mark Absent">✗</button>
                     </div>
@@ -345,17 +355,19 @@ closeDBConnection($conn);
         
         function updateUI(studentId) {
             const item = document.querySelector(`[data-student-id="${studentId}"]`);
-            const presentBtn = item.querySelector('.toggle-btn.present');
-            const absentBtn = item.querySelector('.toggle-btn.absent');
+            const presentBtn = item.querySelector('.toggle-btn.present-btn');
+            const absentBtn = item.querySelector('.toggle-btn.absent-btn');
             
             if (attendanceState[studentId]) {
                 item.classList.remove('absent');
-                presentBtn.classList.remove('inactive');
-                absentBtn.classList.add('inactive');
+                item.classList.add('present');
+                presentBtn.classList.add('active');
+                absentBtn.classList.remove('active');
             } else {
+                item.classList.remove('present');
                 item.classList.add('absent');
-                presentBtn.classList.add('inactive');
-                absentBtn.classList.remove('inactive');
+                presentBtn.classList.remove('active');
+                absentBtn.classList.add('active');
             }
         }
         

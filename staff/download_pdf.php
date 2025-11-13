@@ -38,14 +38,14 @@ foreach ($all_students as $student_id => $student) {
     }
 }
 
-// Sort records by student name
+// Sort records by USN number (ascending)
 usort($records, function($a, $b) {
-    return strcmp($a['student_name'], $b['student_name']);
+    return strcmp($a['usn_number'], $b['usn_number']);
 });
 
-// Sort absentees by student name
+// Sort absentees by USN number (ascending)
 usort($absentees, function($a, $b) {
-    return strcmp($a['student_name'], $b['student_name']);
+    return strcmp($a['usn_number'], $b['usn_number']);
 });
 
 header('Content-Type: text/html; charset=utf-8');
@@ -431,7 +431,7 @@ header('Content-Type: text/html; charset=utf-8');
             </div>
             <div class="info-item">
                 <span class="info-label">Venue:</span>
-                <span class="info-value"><?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?></span>
+                <span class="info-value"><?php echo $session['hall_name'] ? htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')') : 'Manual Entry'; ?></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Instructor:</span>
