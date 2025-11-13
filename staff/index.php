@@ -239,7 +239,7 @@ closeDBConnection($conn);
             <!-- Manual Entry -->
             <div class="action-section">
                 <h2>Manual Attendance Entry</h2>
-                <form action="manual_entry.php" method="GET" class="session-form">
+                <form action="create_manual_session.php" method="POST" class="session-form">
                     <div class="form-row-2">
                         <div class="form-group">
                             <label for="manual_subject_id">Select Subject *</label>

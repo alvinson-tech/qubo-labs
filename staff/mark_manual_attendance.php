@@ -1,71 +1,22 @@
 <?php
 require_once '../includes/session.php';
 require_once '../includes/functions.php';
-require_once '../config/database.php';
 requireStaff();
 
+$session_id = intval($_GET['session_id'] ?? 0);
 $staff_id = $_SESSION['user_id'];
-$session_id = isset($_GET['session_id']) ? intval($_GET['session_id']) : 0;
 
-// If session_id is provided, load existing session
-if ($session_id > 0) {
-    $session = getSessionDetails($session_id);
-    if (!$session || $session['staff_id'] != $staff_id || $session['status'] !== 'active' || $session['hall_id']) {
-        header('Location: index.php');
-        exit();
-    }
-    $subject_id = $session['subject_id'];
-    $class_id = $session['class_id'];
-    $comments = $session['comments'];
-} else {
-    // New session - get params
-    $subject_id = isset($_GET['subject_id']) ? intval($_GET['subject_id']) : 0;
-    $class_id = isset($_GET['class_id']) ? intval($_GET['class_id']) : 0;
-    $comments = isset($_GET['comments']) ? trim($_GET['comments']) : '';
-    
-    if (empty($subject_id) || empty($class_id)) {
-        header('Location: index.php');
-        exit();
-    }
-    
-    // Create new manual session
-    $subject = getSubjectDetails($subject_id);
-    if (!$subject) {
-        header('Location: index.php');
-        exit();
-    }
-    
-    $session_name = $subject['subject_name'];
-    
-    $conn = getDBConnection();
-    
-    // Use empty string if comments is null
-    if ($comments === null) {
-        $comments = '';
-    }
-    
-    $stmt = $conn->prepare("INSERT INTO attendance_sessions (staff_id, class_id, hall_id, subject_id, session_name, comments, status) 
-                            VALUES (?, ?, NULL, ?, ?, ?, 'active')");
-    $stmt->bind_param("iiiss", $staff_id, $class_id, $subject_id, $session_name, $comments);
-    
-    if ($stmt->execute()) {
-        $session_id = $conn->insert_id;
-        $stmt->close();
-        closeDBConnection($conn);
-    } else {
-        $error = $stmt->error;
-        $stmt->close();
-        closeDBConnection($conn);
-        die("Error creating session: " . htmlspecialchars($error));
-    }
-    
-    $session = getSessionDetails($session_id);
+// Verify session
+$session = getSessionDetails($session_id);
+if (!$session || $session['staff_id'] != $staff_id || $session['status'] !== 'active' || $session['hall_id'] !== null) {
+    header('Location: index.php');
+    exit();
 }
 
-// Get all students in the class (ordered by USN)
+// Get all students
 $conn = getDBConnection();
 $stmt = $conn->prepare("SELECT student_id, usn_number, student_name FROM students WHERE class_id = ? ORDER BY usn_number ASC");
-$stmt->bind_param("i", $class_id);
+$stmt->bind_param("i", $session['class_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 $students = [];
@@ -73,18 +24,6 @@ while ($row = $result->fetch_assoc()) {
     $students[] = $row;
 }
 $stmt->close();
-
-// Get already marked attendance
-$stmt = $conn->prepare("SELECT student_id FROM attendance_records WHERE session_id = ?");
-$stmt->bind_param("i", $session_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$marked_students = [];
-while ($row = $result->fetch_assoc()) {
-    $marked_students[] = $row['student_id'];
-}
-$stmt->close();
-
 closeDBConnection($conn);
 ?>
 <!DOCTYPE html>
@@ -92,7 +31,7 @@ closeDBConnection($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Attendance Entry - Qubo Labs</title>
+    <title>Manual Attendance - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         .students-list {
@@ -274,7 +213,7 @@ closeDBConnection($conn);
             </button>
         </div>
         
-        <div class="students-list" id="students-list">
+        <div class="students-list">
             <?php $sno = 1; foreach ($students as $student): ?>
                 <div class="student-item present" data-student-id="<?php echo $student['student_id']; ?>">
                     <div class="student-info">
@@ -296,7 +235,7 @@ closeDBConnection($conn);
         const sessionId = <?php echo $session_id; ?>;
         let attendanceState = {};
         
-        // Initialize all students as present by default
+        // Initialize all as present
         <?php foreach ($students as $student): ?>
             attendanceState[<?php echo $student['student_id']; ?>] = true;
         <?php endforeach; ?>
@@ -354,7 +293,7 @@ closeDBConnection($conn);
         }
         
         function cancelSession() {
-            if (confirm('Are you sure you want to cancel this session? All data will be deleted and this session will not be recorded. This cannot be undone.')) {
+            if (confirm('Are you sure you want to cancel this session? All data will be deleted. This cannot be undone.')) {
                 fetch('../api/cancel_session.php', {
                     method: 'POST',
                     headers: {
@@ -370,7 +309,7 @@ closeDBConnection($conn);
                         alert('Session cancelled successfully!');
                         window.location.href = 'index.php';
                     } else {
-                        alert('Error cancelling session: ' + data.message);
+                        alert('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
@@ -383,7 +322,7 @@ closeDBConnection($conn);
             const presentCount = Object.values(attendanceState).filter(v => v === true).length;
             const totalCount = Object.keys(attendanceState).length;
             
-            if (confirm(`Confirm attendance and end session?\n\nPresent: ${presentCount}\nAbsent: ${totalCount - presentCount}\n\nThis action cannot be undone.`)) {
+            if (confirm(`Confirm attendance and end session?\n\nPresent: ${presentCount}\nAbsent: ${totalCount - presentCount}\n\nThis cannot be undone.`)) {
                 const presentStudents = Object.keys(attendanceState)
                     .filter(id => attendanceState[id] === true)
                     .map(id => parseInt(id));
@@ -401,7 +340,7 @@ closeDBConnection($conn);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Attendance confirmed and session ended successfully!');
+                        alert('Attendance confirmed successfully!');
                         window.location.href = 'index.php';
                     } else {
                         alert('Error: ' + data.message);
@@ -409,7 +348,6 @@ closeDBConnection($conn);
                 })
                 .catch(error => {
                     alert('Error submitting attendance. Please try again.');
-                    console.error(error);
                 });
             }
         }
