@@ -111,7 +111,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
         <div class="session-header">
             <h1><?php echo htmlspecialchars($session['session_name']); ?></h1>
             <p class="session-meta">
-                <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section']); ?> | 
+                <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section'] . ' (' . $session['semester'] . ')'); ?> | 
                 Started: <?php echo date('h:i A', strtotime($session['start_time'])); ?>
             </p>
             <div class="hall-info">

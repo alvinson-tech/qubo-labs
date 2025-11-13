@@ -112,7 +112,7 @@ function getAttendanceReport($session_id) {
 // Get session details
 function getSessionDetails($session_id) {
     $conn = getDBConnection();
-    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section, h.hall_name, h.room_number
+    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section, c.semester, h.hall_name, h.room_number
               FROM attendance_sessions ats
               JOIN staff st ON ats.staff_id = st.staff_id
               JOIN classes c ON ats.class_id = c.class_id

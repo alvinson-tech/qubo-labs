@@ -26,8 +26,8 @@ $stmt->close();
 
 $staff_id = $_SESSION['user_id'];
 
-// Get all classes
-$stmt = $conn->prepare("SELECT * FROM classes ORDER BY class_name, section");
+// Get all classes grouped by semester
+$stmt = $conn->prepare("SELECT * FROM classes ORDER BY semester, section");
 $stmt->execute();
 $result = $stmt->get_result();
 $classes = [];
@@ -40,7 +40,7 @@ $stmt->close();
 $halls = getSeminarHalls();
 
 // Get recent sessions
-$stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section, h.hall_name, h.room_number
+$stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section, c.semester, h.hall_name, h.room_number
                         FROM attendance_sessions ats
                         JOIN classes c ON ats.class_id = c.class_id
                         JOIN seminar_halls h ON ats.hall_id = h.hall_id
@@ -94,11 +94,27 @@ closeDBConnection($conn);
                         <label for="class_id">Select Class</label>
                         <select id="class_id" name="class_id" required>
                             <option value="">Choose a class...</option>
-                            <?php foreach ($classes as $class): ?>
+                            <?php 
+                            $current_semester = '';
+                            foreach ($classes as $class): 
+                                // Add optgroup header when semester changes
+                                if ($current_semester !== $class['semester']) {
+                                    if ($current_semester !== '') {
+                                        echo '</optgroup>';
+                                    }
+                                    $current_semester = $class['semester'];
+                                    echo '<optgroup label="' . htmlspecialchars($current_semester) . '">';
+                                }
+                            ?>
                                 <option value="<?php echo $class['class_id']; ?>">
                                     <?php echo htmlspecialchars($class['class_name'] . ' - Section ' . $class['section']); ?>
                                 </option>
-                            <?php endforeach; ?>
+                            <?php 
+                            endforeach;
+                            if ($current_semester !== '') {
+                                echo '</optgroup>';
+                            }
+                            ?>
                         </select>
                     </div>
                 </div>
@@ -132,7 +148,7 @@ closeDBConnection($conn);
                             <div class="session-info">
                                 <h3><?php echo htmlspecialchars($session['session_name']); ?></h3>
                                 <p class="session-meta">
-                                    <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section']); ?> | 
+                                    <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section'] . ' (' . $session['semester'] . ')'); ?> | 
                                     <?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?>
                                 </p>
                                 <p class="session-time">
