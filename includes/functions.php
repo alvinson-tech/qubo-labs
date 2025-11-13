@@ -1,14 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-// Generate random 4-character alphanumeric code
+// Generate random 4-digit numeric code
 function generateVerificationCode() {
-    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    $code = '';
-    for ($i = 0; $i < 4; $i++) {
-        $code .= $characters[rand(0, strlen($characters) - 1)];
-    }
-    return $code;
+    // Generate a random 4-digit number (1000-9999)
+    return str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
 }
 
 // Check if there's an active session for a class

@@ -28,6 +28,43 @@ if (!$my_record) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Attendance - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .code-input-group input {
+            width: 220px;
+            padding: 24px;
+            font-size: 48px;
+            text-align: center;
+            letter-spacing: 18px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 800;
+            background: white;
+            color: var(--text-primary);
+            outline: none;
+        }
+        
+        .code-input-group input::placeholder {
+            letter-spacing: 12px;
+            color: #cbd5e1;
+        }
+        
+        .code-input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        /* Hide increment/decrement arrows for number input */
+        .code-input-group input::-webkit-outer-spin-button,
+        .code-input-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .code-input-group input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -47,7 +84,7 @@ if (!$my_record) {
                     <div class="verification-code-large">
                         <?php echo htmlspecialchars($my_record['verification_code']); ?>
                     </div>
-                    <p class="info-text">Share this code with your neighbor sitting beside you</p>
+                    <p class="info-text">Share this 4-digit code with your neighbor sitting beside you</p>
                 </div>
                 
                 <div class="divider">AND</div>
@@ -58,7 +95,14 @@ if (!$my_record) {
                     
                     <form id="verify-form">
                         <div class="code-input-group">
-                            <input type="text" id="neighbor-code" maxlength="4" placeholder="XXXX" required>
+                            <input 
+                                type="number" 
+                                id="neighbor-code" 
+                                maxlength="4" 
+                                placeholder="1234" 
+                                pattern="[0-9]{4}"
+                                inputmode="numeric"
+                                required>
                         </div>
                         
                         <button type="submit" class="btn btn-primary btn-block">Verify Attendance</button>
@@ -79,14 +123,39 @@ if (!$my_record) {
     
     <script>
         const sessionId = <?php echo $session_id; ?>;
+        const codeInput = document.getElementById('neighbor-code');
+        
+        // Limit input to 4 digits
+        codeInput.addEventListener('input', function(e) {
+            // Remove any non-digit characters
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limit to 4 digits
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+        });
+        
+        // Prevent paste of non-numeric values
+        codeInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const numericOnly = pastedText.replace(/[^0-9]/g, '').slice(0, 4);
+            this.value = numericOnly;
+        });
         
         document.getElementById('verify-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const code = document.getElementById('neighbor-code').value.trim().toUpperCase();
+            const code = document.getElementById('neighbor-code').value.trim();
             
             if (code.length !== 4) {
-                showError('Please enter a valid 4-character code');
+                showError('Please enter a valid 4-digit code');
+                return;
+            }
+            
+            if (!/^\d{4}$/.test(code)) {
+                showError('Code must contain only numbers');
                 return;
             }
             
