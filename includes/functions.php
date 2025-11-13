@@ -67,7 +67,7 @@ function getStudentAttendanceRecord($session_id, $student_id) {
 function getLiveAttendanceData($session_id) {
     $conn = getDBConnection();
     $query = "SELECT ar.*, s.seat_number, s.row_number, s.seat_position, 
-              st.student_name, st.roll_number
+              st.student_name, st.usn_number
               FROM attendance_records ar
               JOIN seminar_seats s ON ar.seat_id = s.seat_id
               JOIN students st ON ar.student_id = st.student_id
@@ -88,8 +88,8 @@ function getLiveAttendanceData($session_id) {
 // Get all attendance records for a session (for PDF)
 function getAttendanceReport($session_id) {
     $conn = getDBConnection();
-    $query = "SELECT ar.*, s.seat_number, st.student_name, st.roll_number,
-              verifier.student_name as verifier_name, verifier.roll_number as verifier_roll
+    $query = "SELECT ar.*, s.seat_number, st.student_name, st.usn_number,
+              verifier.student_name as verifier_name, verifier.usn_number as verifier_usn
               FROM attendance_records ar
               JOIN seminar_seats s ON ar.seat_id = s.seat_id
               JOIN students st ON ar.student_id = st.student_id

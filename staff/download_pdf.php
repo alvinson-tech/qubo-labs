@@ -18,7 +18,7 @@ $records = getAttendanceReport($session_id);
 
 // Get all students in the class to find absentees
 $conn = getDBConnection();
-$stmt = $conn->prepare("SELECT student_id, roll_number, student_name FROM students WHERE class_id = ? ORDER BY roll_number");
+$stmt = $conn->prepare("SELECT student_id, usn_number, student_name FROM students WHERE class_id = ? ORDER BY usn_number");
 $stmt->bind_param("i", $session['class_id']);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -385,7 +385,7 @@ header('Content-Type: text/html; charset=utf-8');
         <thead>
             <tr>
                 <th style="width: 8%;">S.No</th>
-                <th style="width: 18%;">Roll Number</th>
+                <th style="width: 18%;">USN Number</th>
                 <th style="width: 28%;">Student Name</th>
                 <th style="width: 15%;">Seat No.</th>
                 <th style="width: 16%;">Scan Time</th>
@@ -403,7 +403,7 @@ header('Content-Type: text/html; charset=utf-8');
                 <?php $sno = 1; foreach ($records as $record): ?>
                     <tr>
                         <td style="text-align: center; font-weight: 600;"><?php echo $sno++; ?></td>
-                        <td style="font-weight: 600;"><?php echo htmlspecialchars($record['roll_number']); ?></td>
+                        <td style="font-weight: 600;"><?php echo htmlspecialchars($record['usn_number']); ?></td>
                         <td><?php echo htmlspecialchars($record['student_name']); ?></td>
                         <td style="text-align: center; font-weight: 600; color: #2563eb;"><?php echo htmlspecialchars($record['seat_number']); ?></td>
                         <td><?php echo date('h:i A', strtotime($record['scanned_at'])); ?></td>
@@ -432,7 +432,7 @@ header('Content-Type: text/html; charset=utf-8');
             <thead style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
                 <tr>
                     <th style="width: 10%;">S.No</th>
-                    <th style="width: 25%;">Roll Number</th>
+                    <th style="width: 25%;">USN Number</th>
                     <th style="width: 65%;">Student Name</th>
                 </tr>
             </thead>
@@ -440,7 +440,7 @@ header('Content-Type: text/html; charset=utf-8');
                 <?php $abs_no = 1; foreach ($absentees as $absentee): ?>
                     <tr style="background: #fef2f2;">
                         <td style="text-align: center; font-weight: 600; color: #991b1b;"><?php echo $abs_no++; ?></td>
-                        <td style="font-weight: 600; color: #991b1b;"><?php echo htmlspecialchars($absentee['roll_number']); ?></td>
+                        <td style="font-weight: 600; color: #991b1b;"><?php echo htmlspecialchars($absentee['usn_number']); ?></td>
                         <td style="color: #7f1d1d;"><?php echo htmlspecialchars($absentee['student_name']); ?></td>
                     </tr>
                 <?php endforeach; ?>

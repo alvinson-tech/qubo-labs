@@ -17,10 +17,10 @@ if (!$session || $session['staff_id'] != $staff_id) {
 
 // Get all students in the class
 $conn = getDBConnection();
-$query = "SELECT student_id, roll_number, student_name 
+$query = "SELECT student_id, usn_number, student_name 
           FROM students 
           WHERE class_id = ? 
-          ORDER BY roll_number";
+          ORDER BY usn_number";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $session['class_id']);
 $stmt->execute();
@@ -48,7 +48,7 @@ foreach ($all_students as $student_id => $student) {
         $record = $attendance_map[$student_id];
         $complete_list[] = [
             'student_id' => $student_id,
-            'roll_number' => $student['roll_number'],
+            'usn_number' => $student['usn_number'],
             'student_name' => $student['student_name'],
             'seat_number' => $record['seat_number'],
             'status' => $record['status'],
@@ -59,7 +59,7 @@ foreach ($all_students as $student_id => $student) {
         // Student hasn't marked attendance
         $complete_list[] = [
             'student_id' => $student_id,
-            'roll_number' => $student['roll_number'],
+            'usn_number' => $student['usn_number'],
             'student_name' => $student['student_name'],
             'seat_number' => '-',
             'status' => 'not_marked',

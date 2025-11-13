@@ -153,7 +153,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                     <thead>
                         <tr>
                             <th style="width: 6%;">S.No</th>
-                            <th style="width: 16%;">Roll Number</th>
+                            <th style="width: 16%;">USN Number</th>
                             <th style="width: 25%;">Student Name</th>
                             <th style="width: 12%;">Seat No.</th>
                             <th style="width: 15%;">Status</th>
@@ -304,7 +304,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 row.className = statusClass;
                 row.innerHTML = `
                     <td style="font-weight: 700; text-align: center;">${index + 1}</td>
-                    <td style="font-weight: 600;">${record.roll_number}</td>
+                    <td style="font-weight: 600;">${record.usn_number}</td>
                     <td>${record.student_name}</td>
                     <td style="text-align: center; font-weight: 700; color: #2563eb;">${record.seat_number}</td>
                     <td>${statusBadge}</td>
