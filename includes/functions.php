@@ -112,7 +112,7 @@ function getSessionDetails($session_id) {
               FROM attendance_sessions ats
               JOIN staff st ON ats.staff_id = st.staff_id
               JOIN classes c ON ats.class_id = c.class_id
-              JOIN seminar_halls h ON ats.hall_id = h.hall_id
+              LEFT JOIN seminar_halls h ON ats.hall_id = h.hall_id
               LEFT JOIN subjects sub ON ats.subject_id = sub.subject_id
               WHERE ats.session_id = ?";
     $stmt = $conn->prepare($query);
@@ -156,7 +156,7 @@ function getSeatsForHall($hall_id) {
     return $seats;
 }
 
-// NEW: Get all subjects
+// Get all subjects
 function getAllSubjects() {
     $conn = getDBConnection();
     $stmt = $conn->prepare("SELECT * FROM subjects ORDER BY subject_type, subject_name");
@@ -171,7 +171,7 @@ function getAllSubjects() {
     return $subjects;
 }
 
-// NEW: Get student's attendance summary for all subjects
+// Get student's attendance summary for all subjects
 function getStudentAttendanceSummary($student_id) {
     $conn = getDBConnection();
     $query = "SELECT * FROM student_attendance_summary WHERE student_id = ? ORDER BY subject_name";
@@ -188,7 +188,7 @@ function getStudentAttendanceSummary($student_id) {
     return $data;
 }
 
-// NEW: Get student's attendance for a specific subject
+// Get student's attendance for a specific subject
 function getStudentSubjectAttendance($student_id, $subject_id) {
     $conn = getDBConnection();
     $query = "SELECT * FROM student_attendance_summary 
@@ -203,7 +203,7 @@ function getStudentSubjectAttendance($student_id, $subject_id) {
     return $data;
 }
 
-// NEW: Get subject details
+// Get subject details - ADDED THIS MISSING FUNCTION
 function getSubjectDetails($subject_id) {
     $conn = getDBConnection();
     $stmt = $conn->prepare("SELECT * FROM subjects WHERE subject_id = ?");

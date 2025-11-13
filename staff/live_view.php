@@ -97,7 +97,16 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             color: #2563eb;
         }
         
-        /* Updated seating styles - Responsive */
+        .btn-cancel {
+            background: #f97316;
+            color: white;
+        }
+        
+        .btn-cancel:hover {
+            background: #ea580c;
+        }
+        
+        /* Responsive seating styles */
         .auditorium-layout {
             background: white;
             padding: 24px;
@@ -202,7 +211,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             }
         }
         
-        /* Fixed table column widths */
         .attendance-table th:nth-child(1),
         .attendance-table td:nth-child(1) {
             width: 6%;
@@ -245,6 +253,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
     <div class="navbar">
         <div class="nav-brand">Qubo Labs - Live Session</div>
         <div class="nav-actions">
+            <button onclick="cancelSession()" class="btn btn-cancel">Cancel Session</button>
             <button onclick="endSession()" class="btn btn-danger">End Session</button>
             <a href="index.php" class="btn btn-sm">Dashboard</a>
         </div>
@@ -288,7 +297,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             </div>
         </div>
         
-        <!-- Students Attendance Table -->
         <div class="students-attendance-table">
             <h2>Live Attendance Records</h2>
             <div class="table-container">
@@ -320,11 +328,9 @@ $hall_seats = getSeatsForHall($session['hall_id']);
         const hallSeats = <?php echo json_encode($hall_seats); ?>;
         let updateInterval;
         
-        // Initialize seating grid based on hall layout
         function initSeatingGrid() {
             const grid = document.getElementById('seating-grid');
             
-            // Group seats by row
             const seatsByRow = {};
             hallSeats.forEach(seat => {
                 if (!seatsByRow[seat.row_number]) {
@@ -333,7 +339,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 seatsByRow[seat.row_number].push(seat);
             });
             
-            // Create rows (5 rows total)
             for (let rowNum = 1; rowNum <= 5; rowNum++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'seat-row';
@@ -356,7 +361,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             }
         }
         
-        // Update live data
         function updateLiveData() {
             fetch('../api/get_live_data.php?session_id=' + sessionId)
                 .then(response => response.json())
@@ -372,30 +376,25 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 });
         }
         
-        // Update seating display
         function updateSeating(attendanceData) {
-            // Reset all seats
             document.querySelectorAll('.seat-box').forEach(seat => {
                 seat.className = 'seat-box empty';
                 const seatNumber = seat.getAttribute('data-seat');
                 seat.innerHTML = `<span class="seat-number">${seatNumber}</span>`;
             });
             
-            // Update with current data
             attendanceData.forEach(record => {
                 const seatElement = document.getElementById('seat-' + record.seat_number);
                 if (seatElement) {
                     if (record.status === 'verified') {
                         seatElement.className = 'seat-box verified';
                     } else {
-                        // Both 'scanned' and 'no_neighbours' show as yellow
                         seatElement.className = 'seat-box scanned';
                     }
                 }
             });
         }
         
-        // Update statistics
         function updateStats(stats) {
             document.getElementById('total-students').textContent = stats.total_students;
             document.getElementById('total-marked').textContent = stats.total_marked;
@@ -403,7 +402,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             document.getElementById('total-not-marked').textContent = stats.total_not_marked;
         }
         
-        // Update student list table
         function updateStudentTable(completeList) {
             const tbody = document.getElementById('student-list-body');
             tbody.innerHTML = '';
@@ -456,7 +454,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             });
         }
         
-        // Manual verification function
         function manualVerify(studentId, approve) {
             const action = approve ? 'approve' : 'reject';
             const confirmMsg = approve 
@@ -482,7 +479,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             .then(data => {
                 if (data.success) {
                     alert(data.message);
-                    updateLiveData(); // Refresh the data
+                    updateLiveData();
                 } else {
                     alert('Error: ' + data.message);
                 }
@@ -492,7 +489,32 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             });
         }
         
-        // End session
+        function cancelSession() {
+            if (confirm('Are you sure you want to cancel this session? All attendance data will be deleted and this session will not be recorded. This cannot be undone.')) {
+                fetch('../api/cancel_session.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Session cancelled successfully!');
+                        window.location.href = 'index.php';
+                    } else {
+                        alert('Error cancelling session: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error cancelling session. Please try again.');
+                });
+            }
+        }
+        
         function endSession() {
             if (confirm('Are you sure you want to end this session? This cannot be undone.')) {
                 fetch('end_session.php', {
@@ -519,14 +541,11 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             }
         }
         
-        // Initialize
         initSeatingGrid();
         updateLiveData();
         
-        // Update every 3 seconds
         updateInterval = setInterval(updateLiveData, 3000);
         
-        // Cleanup on page unload
         window.addEventListener('beforeunload', function() {
             clearInterval(updateInterval);
         });

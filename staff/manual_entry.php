@@ -259,12 +259,22 @@ closeDBConnection($conn);
             gap: 8px;
             margin-bottom: 20px;
         }
+        
+        .btn-cancel {
+            background: #f97316;
+            color: white;
+        }
+        
+        .btn-cancel:hover {
+            background: #ea580c;
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
         <div class="nav-brand">Qubo Labs - Manual Entry</div>
         <div class="nav-user">
+            <button onclick="cancelSession()" class="btn btn-cancel btn-sm">Cancel Session</button>
             <a href="index.php" class="btn btn-sm">← Dashboard</a>
         </div>
     </div>
@@ -336,7 +346,6 @@ closeDBConnection($conn);
         const sessionId = <?php echo $session_id; ?>;
         let attendanceState = {};
         
-        // Initialize state
         <?php foreach ($students as $student): ?>
             attendanceState[<?php echo $student['student_id']; ?>] = <?php echo in_array($student['student_id'], $marked_students) ? 'true' : 'false'; ?>;
         <?php endforeach; ?>
@@ -398,17 +407,41 @@ closeDBConnection($conn);
             }
         }
         
+        function cancelSession() {
+            if (confirm('Are you sure you want to cancel this session? All attendance data will be deleted and this session will not be recorded. This cannot be undone.')) {
+                fetch('../api/cancel_session.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Session cancelled successfully!');
+                        window.location.href = 'index.php';
+                    } else {
+                        alert('Error cancelling session: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error cancelling session. Please try again.');
+                });
+            }
+        }
+        
         function confirmAttendance() {
             const presentCount = Object.values(attendanceState).filter(v => v === true).length;
             const totalCount = Object.keys(attendanceState).length;
             
             if (confirm(`Confirm attendance?\n\nPresent: ${presentCount}\nAbsent: ${totalCount - presentCount}\n\nThis will end the session.`)) {
-                // Prepare data
                 const presentStudents = Object.keys(attendanceState)
                     .filter(id => attendanceState[id] === true)
                     .map(id => parseInt(id));
                 
-                // Submit attendance
                 fetch('submit_manual_attendance.php', {
                     method: 'POST',
                     headers: {
