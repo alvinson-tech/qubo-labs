@@ -5,7 +5,7 @@ require_once '../config/database.php';
 requireStaff();
 
 $staff_id = $_SESSION['user_id'];
-$session_id = $_GET['session_id'] ?? 0;
+$session_id = isset($_GET['session_id']) ? intval($_GET['session_id']) : 0;
 
 // If session_id is provided, load existing session
 if ($session_id > 0) {
@@ -19,9 +19,9 @@ if ($session_id > 0) {
     $comments = $session['comments'];
 } else {
     // New session - get params
-    $subject_id = $_GET['subject_id'] ?? 0;
-    $class_id = $_GET['class_id'] ?? 0;
-    $comments = $_GET['comments'] ?? '';
+    $subject_id = isset($_GET['subject_id']) ? intval($_GET['subject_id']) : 0;
+    $class_id = isset($_GET['class_id']) ? intval($_GET['class_id']) : 0;
+    $comments = isset($_GET['comments']) ? trim($_GET['comments']) : '';
     
     if (empty($subject_id) || empty($class_id)) {
         header('Location: index.php');
@@ -38,6 +38,12 @@ if ($session_id > 0) {
     $session_name = $subject['subject_name'];
     
     $conn = getDBConnection();
+    
+    // Use empty string if comments is null
+    if ($comments === null) {
+        $comments = '';
+    }
+    
     $stmt = $conn->prepare("INSERT INTO attendance_sessions (staff_id, class_id, hall_id, subject_id, session_name, comments, status) 
                             VALUES (?, ?, NULL, ?, ?, ?, 'active')");
     $stmt->bind_param("iiiss", $staff_id, $class_id, $subject_id, $session_name, $comments);
@@ -47,10 +53,10 @@ if ($session_id > 0) {
         $stmt->close();
         closeDBConnection($conn);
     } else {
+        $error = $stmt->error;
         $stmt->close();
         closeDBConnection($conn);
-        header('Location: index.php?error=create_failed');
-        exit();
+        die("Error creating session: " . htmlspecialchars($error));
     }
     
     $session = getSessionDetails($session_id);

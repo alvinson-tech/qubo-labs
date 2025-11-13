@@ -203,7 +203,7 @@ function getStudentSubjectAttendance($student_id, $subject_id) {
     return $data;
 }
 
-// Get subject details - ADDED THIS MISSING FUNCTION
+// Get subject details - THIS WAS MISSING!
 function getSubjectDetails($subject_id) {
     $conn = getDBConnection();
     $stmt = $conn->prepare("SELECT * FROM subjects WHERE subject_id = ?");
