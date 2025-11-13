@@ -1,14 +1,71 @@
--- Reset Database Script - Use this to start fresh
+-- ============================================
+-- COMPLETE DATABASE RESET SCRIPT
+-- Use this to start the attendance system from scratch
+-- ============================================
+
 USE qubo_labs;
 
--- Clear all attendance data
+-- Step 1: Clear all attendance-related data
+-- This removes all attendance records and sessions
 DELETE FROM attendance_records;
 DELETE FROM attendance_sessions;
 
--- Reset auto increment
+-- Step 2: Reset auto-increment counters
+-- This ensures new records start from ID 1
 ALTER TABLE attendance_records AUTO_INCREMENT = 1;
 ALTER TABLE attendance_sessions AUTO_INCREMENT = 1;
 
--- Clear all active sessions (logout everyone)
+-- Step 3: Clear all active sessions (logout all users)
+-- This logs out all students and staff from the system
 UPDATE students SET session_token = NULL, last_login = NULL;
 UPDATE staff SET session_token = NULL, last_login = NULL;
+
+-- ============================================
+-- OPTIONAL: Complete System Reset
+-- Uncomment the sections below if you want to:
+-- 1. Reset all users (students and staff)
+-- 2. Reset all classes
+-- 3. Reset seminar halls and seats
+-- ============================================
+
+/*
+-- OPTION A: Delete all students (keeps the student table structure)
+DELETE FROM students;
+ALTER TABLE students AUTO_INCREMENT = 1;
+
+-- OPTION B: Delete all staff (keeps the staff table structure)
+DELETE FROM staff;
+ALTER TABLE staff AUTO_INCREMENT = 1;
+
+-- OPTION C: Delete all classes
+DELETE FROM classes;
+ALTER TABLE classes AUTO_INCREMENT = 1;
+
+-- OPTION D: Delete all seminar halls and their seats
+DELETE FROM seminar_seats;
+DELETE FROM seminar_halls;
+ALTER TABLE seminar_seats AUTO_INCREMENT = 1;
+ALTER TABLE seminar_halls AUTO_INCREMENT = 1;
+*/
+
+-- ============================================
+-- VERIFICATION QUERIES
+-- Run these to verify the reset was successful
+-- ============================================
+
+-- Check attendance records (should be 0)
+SELECT COUNT(*) as attendance_records_count FROM attendance_records;
+
+-- Check attendance sessions (should be 0)
+SELECT COUNT(*) as attendance_sessions_count FROM attendance_sessions;
+
+-- Check logged in students (should be 0)
+SELECT COUNT(*) as logged_in_students FROM students WHERE session_token IS NOT NULL;
+
+-- Check logged in staff (should be 0)
+SELECT COUNT(*) as logged_in_staff FROM staff WHERE session_token IS NOT NULL;
+
+-- ============================================
+-- SUCCESS MESSAGE
+-- ============================================
+SELECT 'Database reset completed successfully! All attendance data cleared and all users logged out.' as Status;

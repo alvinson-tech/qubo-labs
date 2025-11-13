@@ -38,6 +38,16 @@ foreach ($all_students as $student_id => $student) {
     }
 }
 
+// Sort records by student name in ascending order
+usort($records, function($a, $b) {
+    return strcmp($a['student_name'], $b['student_name']);
+});
+
+// Sort absentees by student name in ascending order
+usort($absentees, function($a, $b) {
+    return strcmp($a['student_name'], $b['student_name']);
+});
+
 // Set headers for PDF download
 header('Content-Type: text/html; charset=utf-8');
 ?>
@@ -60,7 +70,7 @@ header('Content-Type: text/html; charset=utf-8');
             background: #ffffff;
             color: #1a1a1a;
             line-height: 1.6;
-            font-size: 11px;
+            font-size: 13px;
         }
         
         .document-header {
@@ -83,7 +93,7 @@ header('Content-Type: text/html; charset=utf-8');
         }
         
         .logo-section p {
-            font-size: 11px;
+            font-size: 13px;
             color: #64748b;
             font-weight: 500;
             text-transform: uppercase;
@@ -91,7 +101,7 @@ header('Content-Type: text/html; charset=utf-8');
         }
         
         .report-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: #0f172a;
             margin-top: 12px;
@@ -120,12 +130,12 @@ header('Content-Type: text/html; charset=utf-8');
             font-weight: 600;
             color: #475569;
             min-width: 110px;
-            font-size: 10px;
+            font-size: 13px;
         }
         
         .info-value {
             color: #0f172a;
-            font-size: 10px;
+            font-size: 13px;
         }
         
         .stats-container {
@@ -160,7 +170,7 @@ header('Content-Type: text/html; charset=utf-8');
         }
         
         .stat-label {
-            font-size: 10px;
+            font-size: 11px;
             opacity: 0.95;
             font-weight: 500;
             text-transform: uppercase;
@@ -174,7 +184,8 @@ header('Content-Type: text/html; charset=utf-8');
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             overflow: hidden;
-            font-size: 10px;
+            font-size: 12px;
+            table-layout: fixed;
         }
         
         thead {
@@ -182,19 +193,20 @@ header('Content-Type: text/html; charset=utf-8');
         }
         
         th {
-            padding: 12px 10px;
+            padding: 14px 12px;
             text-align: left;
             color: white;
             font-weight: 600;
-            font-size: 10px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
         td {
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
+            font-size: 12px;
         }
         
         tbody tr:hover {
@@ -209,11 +221,38 @@ header('Content-Type: text/html; charset=utf-8');
             background: #fafbfc;
         }
         
+        /* Fixed column widths */
+        th:nth-child(1), td:nth-child(1) {
+            width: 8%;
+            text-align: center;
+        }
+        
+        th:nth-child(2), td:nth-child(2) {
+            width: 18%;
+        }
+        
+        th:nth-child(3), td:nth-child(3) {
+            width: 28%;
+        }
+        
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%;
+            text-align: center;
+        }
+        
+        th:nth-child(5), td:nth-child(5) {
+            width: 16%;
+        }
+        
+        th:nth-child(6), td:nth-child(6) {
+            width: 15%;
+        }
+        
         .status-badge {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 12px;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -237,7 +276,7 @@ header('Content-Type: text/html; charset=utf-8');
         .no-neighbour {
             font-style: italic;
             color: #64748b;
-            font-size: 9px;
+            font-size: 10px;
         }
         
         .empty-state {
@@ -293,12 +332,29 @@ header('Content-Type: text/html; charset=utf-8');
         
         .footer p {
             color: #94a3b8;
-            font-size: 9px;
+            font-size: 11px;
         }
         
         .footer-logo {
             color: #2563eb;
             font-weight: 600;
+        }
+        
+        /* Absentees table specific widths */
+        .absentees-table th:nth-child(1),
+        .absentees-table td:nth-child(1) {
+            width: 10%;
+            text-align: center;
+        }
+        
+        .absentees-table th:nth-child(2),
+        .absentees-table td:nth-child(2) {
+            width: 25%;
+        }
+        
+        .absentees-table th:nth-child(3),
+        .absentees-table td:nth-child(3) {
+            width: 65%;
         }
         
         @media print {
@@ -384,12 +440,12 @@ header('Content-Type: text/html; charset=utf-8');
     <table>
         <thead>
             <tr>
-                <th style="width: 8%;">S.No</th>
-                <th style="width: 18%;">USN Number</th>
-                <th style="width: 28%;">Student Name</th>
-                <th style="width: 15%;">Seat No.</th>
-                <th style="width: 16%;">Scan Time</th>
-                <th style="width: 15%;">Status</th>
+                <th>S.No</th>
+                <th>USN Number</th>
+                <th>Student Name</th>
+                <th>Seat No.</th>
+                <th>Scan Time</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -402,10 +458,10 @@ header('Content-Type: text/html; charset=utf-8');
             <?php else: ?>
                 <?php $sno = 1; foreach ($records as $record): ?>
                     <tr>
-                        <td style="text-align: center; font-weight: 600;"><?php echo $sno++; ?></td>
+                        <td style="font-weight: 600;"><?php echo $sno++; ?></td>
                         <td style="font-weight: 600;"><?php echo htmlspecialchars($record['usn_number']); ?></td>
                         <td><?php echo htmlspecialchars($record['student_name']); ?></td>
-                        <td style="text-align: center; font-weight: 600; color: #2563eb;"><?php echo htmlspecialchars($record['seat_number']); ?></td>
+                        <td style="font-weight: 600; color: #2563eb;"><?php echo htmlspecialchars($record['seat_number']); ?></td>
                         <td><?php echo date('h:i A', strtotime($record['scanned_at'])); ?></td>
                         <td>
                             <?php if ($record['status'] === 'verified'): ?>
@@ -428,18 +484,18 @@ header('Content-Type: text/html; charset=utf-8');
         <h2 style="color: #ef4444; font-size: 20px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #fee2e2;">
             📋 Absentees (<?php echo count($absentees); ?>)
         </h2>
-        <table style="border: 2px solid #fee2e2;">
+        <table class="absentees-table" style="border: 2px solid #fee2e2;">
             <thead style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
                 <tr>
-                    <th style="width: 10%;">S.No</th>
-                    <th style="width: 25%;">USN Number</th>
-                    <th style="width: 65%;">Student Name</th>
+                    <th>S.No</th>
+                    <th>USN Number</th>
+                    <th>Student Name</th>
                 </tr>
             </thead>
             <tbody>
                 <?php $abs_no = 1; foreach ($absentees as $absentee): ?>
                     <tr style="background: #fef2f2;">
-                        <td style="text-align: center; font-weight: 600; color: #991b1b;"><?php echo $abs_no++; ?></td>
+                        <td style="font-weight: 600; color: #991b1b;"><?php echo $abs_no++; ?></td>
                         <td style="font-weight: 600; color: #991b1b;"><?php echo htmlspecialchars($absentee['usn_number']); ?></td>
                         <td style="color: #7f1d1d;"><?php echo htmlspecialchars($absentee['student_name']); ?></td>
                     </tr>

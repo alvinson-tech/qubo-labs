@@ -96,6 +96,149 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             font-weight: 700;
             color: #2563eb;
         }
+        
+        /* Updated seating styles - Responsive */
+        .auditorium-layout {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        
+        .seating-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .seat-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .seats-container {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex: 1;
+            flex-wrap: nowrap;
+        }
+        
+        .seat-box {
+            width: calc((100vw - 100px) / 21);
+            height: calc((100vw - 100px) / 21);
+            max-width: 60px;
+            max-height: 60px;
+            min-width: 30px;
+            min-height: 30px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(8px, 1.2vw, 11px);
+            font-weight: 800;
+            cursor: pointer;
+            border: 2px solid transparent;
+            flex-shrink: 1;
+        }
+        
+        .seat-number {
+            font-size: clamp(7px, 1vw, 10px);
+        }
+        
+        @media (max-width: 1400px) {
+            .seat-box {
+                width: calc((100vw - 80px) / 21);
+                height: calc((100vw - 80px) / 21);
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .seat-box {
+                width: calc((100vw - 60px) / 21);
+                height: calc((100vw - 60px) / 21);
+            }
+            .seat-row {
+                gap: 4px;
+            }
+            .seats-container {
+                gap: 4px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .seat-box {
+                width: calc((100vw - 50px) / 21);
+                height: calc((100vw - 50px) / 21);
+            }
+            .seat-row {
+                gap: 3px;
+            }
+            .seats-container {
+                gap: 3px;
+            }
+            .seating-grid {
+                gap: 6px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .seat-box {
+                width: calc((100vw - 40px) / 21);
+                height: calc((100vw - 40px) / 21);
+            }
+            .seat-row {
+                gap: 2px;
+            }
+            .seats-container {
+                gap: 2px;
+            }
+        }
+        
+        /* Fixed table column widths */
+        .attendance-table th:nth-child(1),
+        .attendance-table td:nth-child(1) {
+            width: 6%;
+            text-align: center;
+        }
+        
+        .attendance-table th:nth-child(2),
+        .attendance-table td:nth-child(2) {
+            width: 16%;
+        }
+        
+        .attendance-table th:nth-child(3),
+        .attendance-table td:nth-child(3) {
+            width: 25%;
+        }
+        
+        .attendance-table th:nth-child(4),
+        .attendance-table td:nth-child(4) {
+            width: 12%;
+            text-align: center;
+        }
+        
+        .attendance-table th:nth-child(5),
+        .attendance-table td:nth-child(5) {
+            width: 15%;
+        }
+        
+        .attendance-table th:nth-child(6),
+        .attendance-table td:nth-child(6) {
+            width: 16%;
+            text-align: center;
+        }
+        
+        .attendance-table {
+            table-layout: fixed;
+        }
     </style>
 </head>
 <body>
@@ -138,7 +281,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
         </div>
         
         <div class="auditorium-layout">
-            <h2>Seminar Hall Seating (Semi-Circle Layout)</h2>
+            <h2>Seminar Hall Seating</h2>
             <div class="stage">STAGE / PODIUM</div>
             <div id="seating-grid" class="seating-grid">
                 <!-- Seats will be dynamically loaded -->
@@ -152,12 +295,12 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 <table class="attendance-table">
                     <thead>
                         <tr>
-                            <th style="width: 6%;">S.No</th>
-                            <th style="width: 16%;">USN Number</th>
-                            <th style="width: 25%;">Student Name</th>
-                            <th style="width: 12%;">Seat No.</th>
-                            <th style="width: 15%;">Status</th>
-                            <th style="width: 16%;">Manual Verify</th>
+                            <th>S.No</th>
+                            <th>USN Number</th>
+                            <th>Student Name</th>
+                            <th>Seat No.</th>
+                            <th>Status</th>
+                            <th>Manual Verify</th>
                         </tr>
                     </thead>
                     <tbody id="student-list-body">
@@ -194,7 +337,6 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             for (let rowNum = 1; rowNum <= 5; rowNum++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'seat-row';
-                rowDiv.innerHTML = `<div class="row-label">R${rowNum}</div>`;
                 
                 const seatsContainer = document.createElement('div');
                 seatsContainer.className = 'seats-container';
@@ -303,12 +445,12 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 
                 row.className = statusClass;
                 row.innerHTML = `
-                    <td style="font-weight: 700; text-align: center;">${index + 1}</td>
+                    <td style="font-weight: 700;">${index + 1}</td>
                     <td style="font-weight: 600;">${record.usn_number}</td>
                     <td>${record.student_name}</td>
-                    <td style="text-align: center; font-weight: 700; color: #2563eb;">${record.seat_number}</td>
+                    <td style="font-weight: 700; color: #2563eb;">${record.seat_number}</td>
                     <td>${statusBadge}</td>
-                    <td style="text-align: center;">${manualVerifyCol}</td>
+                    <td>${manualVerifyCol}</td>
                 `;
                 tbody.appendChild(row);
             });
