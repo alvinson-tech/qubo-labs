@@ -34,15 +34,16 @@ $conn = getDBConnection();
 $conn->begin_transaction();
 
 try {
-    // Delete all existing records for this session
+    // Delete all existing records for this session (in case of re-submission)
     $stmt = $conn->prepare("DELETE FROM attendance_records WHERE session_id = ?");
     $stmt->bind_param("i", $session_id);
     $stmt->execute();
     $stmt->close();
     
-    // Insert new records for present students
+    // Insert new records for present students with verified status
     if (!empty($present_students)) {
-        $stmt = $conn->prepare("INSERT INTO attendance_records (session_id, student_id, seat_id, verification_code, status, verified_at, scanned_at) 
+        $stmt = $conn->prepare("INSERT INTO attendance_records 
+                                (session_id, student_id, seat_id, verification_code, status, verified_at, scanned_at) 
                                 VALUES (?, ?, 0, '0000', 'verified', NOW(), NOW())");
         
         foreach ($present_students as $student_id) {
@@ -62,7 +63,11 @@ try {
     $conn->commit();
     closeDBConnection($conn);
     
-    echo json_encode(['success' => true, 'message' => 'Attendance recorded successfully']);
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Attendance recorded successfully',
+        'present_count' => count($present_students)
+    ]);
 } catch (Exception $e) {
     // Rollback on error
     $conn->rollback();

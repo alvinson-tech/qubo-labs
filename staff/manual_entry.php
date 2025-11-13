@@ -117,16 +117,8 @@ closeDBConnection($conn);
             background: #f0fdf4;
         }
         
-        .student-item.present:hover {
-            background: #dcfce7;
-        }
-        
         .student-item.absent {
             background: #fef2f2;
-        }
-        
-        .student-item.absent:hover {
-            background: #fee2e2;
         }
         
         .student-info {
@@ -156,55 +148,11 @@ closeDBConnection($conn);
             font-size: 14px;
         }
         
-        .attendance-toggle {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .toggle-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .attendance-checkbox {
+            width: 28px;
+            height: 28px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 24px;
-            background: white;
-        }
-        
-        .toggle-btn.present-btn {
-            border-color: #10b981;
-            color: #065f46;
-        }
-        
-        .toggle-btn.present-btn.active {
-            background: #10b981;
-            color: white;
-        }
-        
-        .toggle-btn.present-btn:hover {
-            background: #10b981;
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .toggle-btn.absent-btn {
-            border-color: #ef4444;
-            color: #991b1b;
-        }
-        
-        .toggle-btn.absent-btn.active {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .toggle-btn.absent-btn:hover {
-            background: #ef4444;
-            color: white;
-            transform: scale(1.1);
+            accent-color: var(--primary);
         }
         
         .stats-bar {
@@ -295,18 +243,18 @@ closeDBConnection($conn);
                     <div class="stat-label">Total Students</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number present" id="present-count"><?php echo count($marked_students); ?></div>
+                    <div class="stat-number present" id="present-count"><?php echo count($students); ?></div>
                     <div class="stat-label">Present</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number absent" id="absent-count"><?php echo count($students) - count($marked_students); ?></div>
+                    <div class="stat-number absent" id="absent-count">0</div>
                     <div class="stat-label">Absent</div>
                 </div>
             </div>
             
             <div class="action-buttons">
                 <button onclick="confirmAttendance()" class="btn btn-primary btn-large">
-                    ✅ Confirm Attendance
+                    ✅ Confirm & End Session
                 </button>
             </div>
         </div>
@@ -322,21 +270,17 @@ closeDBConnection($conn);
         
         <div class="students-list" id="students-list">
             <?php $sno = 1; foreach ($students as $student): ?>
-                <?php $is_present = in_array($student['student_id'], $marked_students); ?>
-                <div class="student-item <?php echo $is_present ? 'present' : 'absent'; ?>" data-student-id="<?php echo $student['student_id']; ?>">
+                <div class="student-item present" data-student-id="<?php echo $student['student_id']; ?>">
                     <div class="student-info">
                         <span class="student-number"><?php echo $sno++; ?></span>
                         <span class="student-usn"><?php echo htmlspecialchars($student['usn_number']); ?></span>
                         <span class="student-name"><?php echo htmlspecialchars($student['student_name']); ?></span>
                     </div>
-                    <div class="attendance-toggle">
-                        <button class="toggle-btn present-btn <?php echo $is_present ? 'active' : ''; ?>" 
-                                onclick="markPresent(<?php echo $student['student_id']; ?>)" 
-                                title="Mark Present">✓</button>
-                        <button class="toggle-btn absent-btn <?php echo !$is_present ? 'active' : ''; ?>" 
-                                onclick="markAbsent(<?php echo $student['student_id']; ?>)" 
-                                title="Mark Absent">✗</button>
-                    </div>
+                    <input type="checkbox" 
+                           class="attendance-checkbox" 
+                           data-student-id="<?php echo $student['student_id']; ?>"
+                           onchange="toggleAttendance(<?php echo $student['student_id']; ?>)"
+                           checked>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -346,38 +290,26 @@ closeDBConnection($conn);
         const sessionId = <?php echo $session_id; ?>;
         let attendanceState = {};
         
+        // Initialize all students as present by default
         <?php foreach ($students as $student): ?>
-            attendanceState[<?php echo $student['student_id']; ?>] = <?php echo in_array($student['student_id'], $marked_students) ? 'true' : 'false'; ?>;
+            attendanceState[<?php echo $student['student_id']; ?>] = true;
         <?php endforeach; ?>
         
-        function markPresent(studentId) {
-            attendanceState[studentId] = true;
-            updateUI(studentId);
-            updateStats();
-        }
-        
-        function markAbsent(studentId) {
-            attendanceState[studentId] = false;
-            updateUI(studentId);
-            updateStats();
-        }
-        
-        function updateUI(studentId) {
-            const item = document.querySelector(`[data-student-id="${studentId}"]`);
-            const presentBtn = item.querySelector('.toggle-btn.present-btn');
-            const absentBtn = item.querySelector('.toggle-btn.absent-btn');
+        function toggleAttendance(studentId) {
+            const checkbox = document.querySelector(`input[data-student-id="${studentId}"]`);
+            const item = document.querySelector(`div[data-student-id="${studentId}"]`);
             
-            if (attendanceState[studentId]) {
+            attendanceState[studentId] = checkbox.checked;
+            
+            if (checkbox.checked) {
                 item.classList.remove('absent');
                 item.classList.add('present');
-                presentBtn.classList.add('active');
-                absentBtn.classList.remove('active');
             } else {
                 item.classList.remove('present');
                 item.classList.add('absent');
-                presentBtn.classList.remove('active');
-                absentBtn.classList.add('active');
             }
+            
+            updateStats();
         }
         
         function updateStats() {
@@ -392,7 +324,11 @@ closeDBConnection($conn);
         function markAllPresent() {
             Object.keys(attendanceState).forEach(studentId => {
                 attendanceState[studentId] = true;
-                updateUI(parseInt(studentId));
+                const checkbox = document.querySelector(`input[data-student-id="${studentId}"]`);
+                const item = document.querySelector(`div[data-student-id="${studentId}"]`);
+                checkbox.checked = true;
+                item.classList.remove('absent');
+                item.classList.add('present');
             });
             updateStats();
         }
@@ -401,14 +337,18 @@ closeDBConnection($conn);
             if (confirm('Are you sure you want to mark all students as absent?')) {
                 Object.keys(attendanceState).forEach(studentId => {
                     attendanceState[studentId] = false;
-                    updateUI(parseInt(studentId));
+                    const checkbox = document.querySelector(`input[data-student-id="${studentId}"]`);
+                    const item = document.querySelector(`div[data-student-id="${studentId}"]`);
+                    checkbox.checked = false;
+                    item.classList.remove('present');
+                    item.classList.add('absent');
                 });
                 updateStats();
             }
         }
         
         function cancelSession() {
-            if (confirm('Are you sure you want to cancel this session? All attendance data will be deleted and this session will not be recorded. This cannot be undone.')) {
+            if (confirm('Are you sure you want to cancel this session? All data will be deleted and this session will not be recorded. This cannot be undone.')) {
                 fetch('../api/cancel_session.php', {
                     method: 'POST',
                     headers: {
@@ -437,7 +377,7 @@ closeDBConnection($conn);
             const presentCount = Object.values(attendanceState).filter(v => v === true).length;
             const totalCount = Object.keys(attendanceState).length;
             
-            if (confirm(`Confirm attendance?\n\nPresent: ${presentCount}\nAbsent: ${totalCount - presentCount}\n\nThis will end the session.`)) {
+            if (confirm(`Confirm attendance and end session?\n\nPresent: ${presentCount}\nAbsent: ${totalCount - presentCount}\n\nThis action cannot be undone.`)) {
                 const presentStudents = Object.keys(attendanceState)
                     .filter(id => attendanceState[id] === true)
                     .map(id => parseInt(id));
@@ -455,7 +395,7 @@ closeDBConnection($conn);
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Attendance confirmed successfully!');
+                        alert('Attendance confirmed and session ended successfully!');
                         window.location.href = 'index.php';
                     } else {
                         alert('Error: ' + data.message);
