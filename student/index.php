@@ -59,6 +59,15 @@ while ($row = $result->fetch_assoc()) {
     $subjects_attendance[] = $row;
 }
 $stmt->close();
+
+// Calculate overall attendance percentage
+$total_sessions_all = 0;
+$total_attended_all = 0;
+foreach ($subjects_attendance as $subject) {
+    $total_sessions_all += $subject['total_sessions'];
+    $total_attended_all += $subject['attended_sessions'];
+}
+$overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $total_sessions_all) * 100, 1) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,6 +77,91 @@ $stmt->close();
     <title>Student Dashboard - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .overall-attendance-card {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border-radius: 12px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .overall-attendance-card h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .overall-radial-progress {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .overall-radial-progress svg {
+            transform: rotate(-90deg);
+        }
+        
+        .overall-radial-progress circle {
+            fill: none;
+            stroke-width: 12;
+        }
+        
+        .overall-radial-progress .bg-circle {
+            stroke: rgba(255, 255, 255, 0.2);
+        }
+        
+        .overall-radial-progress .progress-circle {
+            stroke: white;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .overall-radial-progress .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 42px;
+            font-weight: 800;
+            color: white;
+        }
+        
+        .overall-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .overall-stat {
+            text-align: center;
+        }
+        
+        .overall-stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        
+        .overall-stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
         .subjects-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -175,6 +269,10 @@ $stmt->close();
         }
         
         @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .subjects-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
@@ -241,82 +339,118 @@ $stmt->close();
             <h1>Attendance Dashboard</h1>
         </div>
         
-        <?php if ($active_session): ?>
-            <?php
-            $has_marked = hasMarkedAttendance($active_session['session_id'], $student_id);
-            $attendance_record = getStudentAttendanceRecord($active_session['session_id'], $student_id);
-            ?>
+        <div class="dashboard-grid">
+            <!-- Overall Attendance Card -->
+            <div class="overall-attendance-card">
+                <h2>📊 Overall Attendance</h2>
+                <div class="overall-radial-progress">
+                    <?php
+                        $radius = 70;
+                        $circumference = 2 * pi() * $radius;
+                        $offset = $circumference - ($overall_percentage / 100) * $circumference;
+                    ?>
+                    <svg width="180" height="180" viewBox="0 0 180 180">
+                        <circle class="bg-circle" cx="90" cy="90" r="<?php echo $radius; ?>"></circle>
+                        <circle class="progress-circle" 
+                                cx="90" cy="90" r="<?php echo $radius; ?>"
+                                stroke-dasharray="<?php echo $circumference; ?>"
+                                stroke-dashoffset="<?php echo $offset; ?>">
+                        </circle>
+                    </svg>
+                    <div class="percentage"><?php echo number_format($overall_percentage, 1); ?>%</div>
+                </div>
+                <div class="overall-stats">
+                    <div class="overall-stat">
+                        <div class="overall-stat-value"><?php echo $total_attended_all; ?></div>
+                        <div class="overall-stat-label">Attended</div>
+                    </div>
+                    <div class="overall-stat">
+                        <div class="overall-stat-value"><?php echo $total_sessions_all; ?></div>
+                        <div class="overall-stat-label">Total</div>
+                    </div>
+                </div>
+            </div>
             
-            <div class="session-card active">
-                <div class="session-badge">ACTIVE SESSION</div>
-                <h2><?php echo htmlspecialchars($active_session['session_name']); ?></h2>
-                <p class="session-time">Started: <?php echo date('M d, Y h:i A', strtotime($active_session['start_time'])); ?></p>
-                
-                <?php if (!$has_marked): ?>
-                    <a href="scan_qr.php?session_id=<?php echo $active_session['session_id']; ?>" class="btn btn-primary btn-large">
-                        📷 Scan QR Code
-                    </a>
-                <?php elseif ($attendance_record['status'] === 'scanned' && !$attendance_record['no_neighbours']): ?>
-                    <div class="status-message warning">
-                        <h3>⏳ Waiting for Verification</h3>
-                        <p>Your QR code has been scanned. Share your verification code with your neighbor.</p>
-                        <div class="verification-code-display">
-                            <?php echo htmlspecialchars($attendance_record['verification_code']); ?>
-                        </div>
-                        <p class="info-text">Your neighbor should enter this code to verify your attendance.</p>
-                        <a href="verify_code.php?session_id=<?php echo $active_session['session_id']; ?>" class="btn btn-primary" style="margin-top: 20px;">
-                            Enter Neighbor's Code
-                        </a>
+            <!-- Active Session Card -->
+            <div>
+                <?php if ($active_session): ?>
+                    <?php
+                    $has_marked = hasMarkedAttendance($active_session['session_id'], $student_id);
+                    $attendance_record = getStudentAttendanceRecord($active_session['session_id'], $student_id);
+                    ?>
+                    
+                    <div class="session-card active">
+                        <div class="session-badge">ACTIVE SESSION</div>
+                        <h2><?php echo htmlspecialchars($active_session['session_name']); ?></h2>
+                        <p class="session-time">Started: <?php echo date('M d, Y h:i A', strtotime($active_session['start_time'])); ?></p>
+                        
+                        <?php if (!$has_marked): ?>
+                            <a href="scan_qr.php?session_id=<?php echo $active_session['session_id']; ?>" class="btn btn-primary btn-large">
+                                📷 Scan QR Code
+                            </a>
+                        <?php elseif ($attendance_record['status'] === 'scanned' && !$attendance_record['no_neighbours']): ?>
+                            <div class="status-message warning">
+                                <h3>⏳ Waiting for Verification</h3>
+                                <p>Your QR code has been scanned. Share your verification code with your neighbor.</p>
+                                <div class="verification-code-display">
+                                    <?php echo htmlspecialchars($attendance_record['verification_code']); ?>
+                                </div>
+                                <p class="info-text">Your neighbor should enter this code to verify your attendance.</p>
+                                <a href="verify_code.php?session_id=<?php echo $active_session['session_id']; ?>" class="btn btn-primary" style="margin-top: 20px;">
+                                    Enter Neighbor's Code
+                                </a>
+                            </div>
+                        <?php elseif ($attendance_record['status'] === 'scanned' && $attendance_record['no_neighbours']): ?>
+                            <div class="status-message warning">
+                                <h3>⚠️ Not Verified</h3>
+                                <p>You marked "No Neighbours" - Your attendance is recorded but not verified.</p>
+                                <p class="info-text">Your attendance will appear as "Not Verified" in the report.</p>
+                                <div class="attendance-details">
+                                    <p><strong>Seat:</strong> <?php 
+                                        $stmt = $conn->prepare("SELECT seat_number FROM seminar_seats WHERE seat_id = ?");
+                                        $stmt->bind_param("i", $attendance_record['seat_id']);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        $seat = $result->fetch_assoc();
+                                        echo htmlspecialchars($seat['seat_number']);
+                                        $stmt->close();
+                                    ?></p>
+                                    <p><strong>Time:</strong> <?php echo date('h:i A', strtotime($attendance_record['scanned_at'])); ?></p>
+                                </div>
+                            </div>
+                        <?php elseif ($attendance_record['status'] === 'verified'): ?>
+                            <div class="status-message success">
+                                <h3>✅ Attendance Verified</h3>
+                                <p>Your attendance has been successfully marked and verified.</p>
+                                <div class="verification-code-display">
+                                    <?php echo htmlspecialchars($attendance_record['verification_code']); ?>
+                                </div>
+                                <p class="info-text">Your verification code (for your neighbor's reference)</p>
+                                <div class="attendance-details">
+                                    <p><strong>Seat:</strong> <?php 
+                                        $stmt = $conn->prepare("SELECT seat_number FROM seminar_seats WHERE seat_id = ?");
+                                        $stmt->bind_param("i", $attendance_record['seat_id']);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        $seat = $result->fetch_assoc();
+                                        echo htmlspecialchars($seat['seat_number']);
+                                        $stmt->close();
+                                    ?></p>
+                                    <p><strong>Time:</strong> <?php echo date('h:i A', strtotime($attendance_record['verified_at'])); ?></p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                <?php elseif ($attendance_record['status'] === 'scanned' && $attendance_record['no_neighbours']): ?>
-                    <div class="status-message warning">
-                        <h3>⚠️ Not Verified</h3>
-                        <p>You marked "No Neighbours" - Your attendance is recorded but not verified.</p>
-                        <p class="info-text">Your attendance will appear as "Not Verified" in the report.</p>
-                        <div class="attendance-details">
-                            <p><strong>Seat:</strong> <?php 
-                                $stmt = $conn->prepare("SELECT seat_number FROM seminar_seats WHERE seat_id = ?");
-                                $stmt->bind_param("i", $attendance_record['seat_id']);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-                                $seat = $result->fetch_assoc();
-                                echo htmlspecialchars($seat['seat_number']);
-                                $stmt->close();
-                            ?></p>
-                            <p><strong>Time:</strong> <?php echo date('h:i A', strtotime($attendance_record['scanned_at'])); ?></p>
-                        </div>
-                    </div>
-                <?php elseif ($attendance_record['status'] === 'verified'): ?>
-                    <div class="status-message success">
-                        <h3>✅ Attendance Verified</h3>
-                        <p>Your attendance has been successfully marked and verified.</p>
-                        <div class="verification-code-display">
-                            <?php echo htmlspecialchars($attendance_record['verification_code']); ?>
-                        </div>
-                        <p class="info-text">Your verification code (for your neighbor's reference)</p>
-                        <div class="attendance-details">
-                            <p><strong>Seat:</strong> <?php 
-                                $stmt = $conn->prepare("SELECT seat_number FROM seminar_seats WHERE seat_id = ?");
-                                $stmt->bind_param("i", $attendance_record['seat_id']);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-                                $seat = $result->fetch_assoc();
-                                echo htmlspecialchars($seat['seat_number']);
-                                $stmt->close();
-                            ?></p>
-                            <p><strong>Time:</strong> <?php echo date('h:i A', strtotime($attendance_record['verified_at'])); ?></p>
-                        </div>
+                <?php else: ?>
+                    <div class="no-session-message">
+                        <div class="icon">📅</div>
+                        <h2>No Active Session</h2>
+                        <p>There are no active attendance sessions at the moment.</p>
+                        <p class="info-text">Please wait for your instructor to start a session.</p>
                     </div>
                 <?php endif; ?>
             </div>
-        <?php else: ?>
-            <div class="no-session-message">
-                <div class="icon">📅</div>
-                <h2>No Active Session</h2>
-                <p>There are no active attendance sessions at the moment.</p>
-                <p class="info-text">Please wait for your instructor to start a session.</p>
-            </div>
-        <?php endif; ?>
+        </div>
         
         <!-- Subjects Attendance Overview -->
         <div style="margin-top: 40px;">
