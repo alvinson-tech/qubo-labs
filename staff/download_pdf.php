@@ -38,24 +38,23 @@ foreach ($all_students as $student_id => $student) {
     }
 }
 
-// Sort records by student name in ascending order
+// Sort records by student name
 usort($records, function($a, $b) {
     return strcmp($a['student_name'], $b['student_name']);
 });
 
-// Sort absentees by student name in ascending order
+// Sort absentees by student name
 usort($absentees, function($a, $b) {
     return strcmp($a['student_name'], $b['student_name']);
 });
 
-// Set headers for PDF download
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Attendance Report - <?php echo htmlspecialchars($session['session_name']); ?></title>
+    <title>Attendance Report - <?php echo htmlspecialchars($session['subject_name'] ?? $session['session_name']); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -107,6 +106,18 @@ header('Content-Type: text/html; charset=utf-8');
             margin-top: 12px;
         }
         
+        .subject-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+        
         .session-info {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -136,6 +147,29 @@ header('Content-Type: text/html; charset=utf-8');
         .info-value {
             color: #0f172a;
             font-size: 13px;
+        }
+        
+        .comments-section {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 25px;
+        }
+        
+        .comments-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .comments-text {
+            color: #78350f;
+            font-size: 13px;
+            font-style: italic;
         }
         
         .stats-container {
@@ -221,7 +255,6 @@ header('Content-Type: text/html; charset=utf-8');
             background: #fafbfc;
         }
         
-        /* Fixed column widths */
         th:nth-child(1), td:nth-child(1) {
             width: 8%;
             text-align: center;
@@ -340,7 +373,6 @@ header('Content-Type: text/html; charset=utf-8');
             font-weight: 600;
         }
         
-        /* Absentees table specific widths */
         .absentees-table th:nth-child(1),
         .absentees-table td:nth-child(1) {
             width: 10%;
@@ -382,13 +414,16 @@ header('Content-Type: text/html; charset=utf-8');
             <p>Smart Attendance Management System</p>
         </div>
         <div class="report-title">Attendance Report</div>
+        <?php if (!empty($session['subject_code'])): ?>
+            <div class="subject-badge"><?php echo htmlspecialchars($session['subject_code']); ?></div>
+        <?php endif; ?>
     </div>
     
     <div class="session-info">
         <div class="info-grid">
             <div class="info-item">
-                <span class="info-label">Session Name:</span>
-                <span class="info-value"><?php echo htmlspecialchars($session['session_name']); ?></span>
+                <span class="info-label">Subject:</span>
+                <span class="info-value"><?php echo htmlspecialchars($session['subject_name'] ?? $session['session_name']); ?></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Class:</span>
@@ -417,6 +452,13 @@ header('Content-Type: text/html; charset=utf-8');
             </div>
         </div>
     </div>
+    
+    <?php if (!empty($session['comments'])): ?>
+    <div class="comments-section">
+        <div class="comments-title">📝 Instructor Comments</div>
+        <div class="comments-text"><?php echo htmlspecialchars($session['comments']); ?></div>
+    </div>
+    <?php endif; ?>
     
     <div class="stats-container">
         <div class="stat-card">

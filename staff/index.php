@@ -14,7 +14,6 @@ $user = $result->fetch_assoc();
 
 // Check if session token matches
 if (!$user || $user['session_token'] !== $_SESSION['session_token']) {
-    // Session invalid - force logout
     $stmt->close();
     closeDBConnection($conn);
     session_unset();
@@ -39,11 +38,16 @@ $stmt->close();
 // Get all seminar halls
 $halls = getSeminarHalls();
 
-// Get recent sessions
-$stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section, c.semester, h.hall_name, h.room_number
+// Get all subjects
+$subjects = getAllSubjects();
+
+// Get recent sessions (updated to include subject info)
+$stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section, c.semester, h.hall_name, h.room_number,
+                        sub.subject_name, sub.subject_code
                         FROM attendance_sessions ats
                         JOIN classes c ON ats.class_id = c.class_id
                         JOIN seminar_halls h ON ats.hall_id = h.hall_id
+                        LEFT JOIN subjects sub ON ats.subject_id = sub.subject_id
                         WHERE ats.staff_id = ?
                         ORDER BY ats.start_time DESC
                         LIMIT 5");
@@ -65,6 +69,28 @@ closeDBConnection($conn);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dashboard - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 1024px) {
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .session-subject {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -83,15 +109,37 @@ closeDBConnection($conn);
         <div class="action-section">
             <h2>Start New Attendance Session</h2>
             <form action="start_session.php" method="POST" class="session-form">
-                <div class="form-row">
+                <div class="form-row-3">
                     <div class="form-group">
-                        <label for="session_name">Session Name</label>
-                        <input type="text" id="session_name" name="session_name" required 
-                               placeholder="e.g., Morning Assembly, Seminar">
+                        <label for="subject_id">Select Subject *</label>
+                        <select id="subject_id" name="subject_id" required>
+                            <option value="">Choose a subject...</option>
+                            <?php 
+                            $current_type = '';
+                            foreach ($subjects as $subject): 
+                                // Add optgroup header when type changes
+                                if ($current_type !== $subject['subject_type']) {
+                                    if ($current_type !== '') {
+                                        echo '</optgroup>';
+                                    }
+                                    $current_type = $subject['subject_type'];
+                                    echo '<optgroup label="' . ucfirst(htmlspecialchars($current_type)) . ' Subjects">';
+                                }
+                            ?>
+                                <option value="<?php echo $subject['subject_id']; ?>">
+                                    <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['subject_name']); ?>
+                                </option>
+                            <?php 
+                            endforeach;
+                            if ($current_type !== '') {
+                                echo '</optgroup>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="class_id">Select Class</label>
+                        <label for="class_id">Select Class *</label>
                         <select id="class_id" name="class_id" required>
                             <option value="">Choose a class...</option>
                             <?php 
@@ -117,18 +165,27 @@ closeDBConnection($conn);
                             ?>
                         </select>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="hall_id">Select Seminar Hall *</label>
+                        <select id="hall_id" name="hall_id" required>
+                            <option value="">Choose a seminar hall...</option>
+                            <?php foreach ($halls as $hall): ?>
+                                <option value="<?php echo $hall['hall_id']; ?>">
+                                    <?php echo htmlspecialchars($hall['hall_name'] . ' (Room ' . $hall['room_number'] . ')'); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="hall_id">Select Seminar Hall</label>
-                    <select id="hall_id" name="hall_id" required>
-                        <option value="">Choose a seminar hall...</option>
-                        <?php foreach ($halls as $hall): ?>
-                            <option value="<?php echo $hall['hall_id']; ?>">
-                                <?php echo htmlspecialchars($hall['hall_name'] . ' (Room ' . $hall['room_number'] . ') - Capacity: ' . $hall['capacity']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label for="comments">Comments (Optional)</label>
+                    <textarea id="comments" 
+                              name="comments" 
+                              rows="3" 
+                              placeholder="Add any additional notes or instructions for students..."
+                              style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; background: white; color: var(--text-primary);"></textarea>
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-large">
@@ -146,11 +203,19 @@ closeDBConnection($conn);
                     <?php foreach ($recent_sessions as $session): ?>
                         <div class="session-item <?php echo $session['status']; ?>">
                             <div class="session-info">
-                                <h3><?php echo htmlspecialchars($session['session_name']); ?></h3>
+                                <?php if (!empty($session['subject_code'])): ?>
+                                    <p class="session-subject"><?php echo htmlspecialchars($session['subject_code']); ?></p>
+                                <?php endif; ?>
+                                <h3><?php echo htmlspecialchars($session['subject_name'] ?? $session['session_name']); ?></h3>
                                 <p class="session-meta">
                                     <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section'] . ' (' . $session['semester'] . ')'); ?> | 
                                     <?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?>
                                 </p>
+                                <?php if (!empty($session['comments'])): ?>
+                                    <p style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; font-style: italic;">
+                                        💬 <?php echo htmlspecialchars($session['comments']); ?>
+                                    </p>
+                                <?php endif; ?>
                                 <p class="session-time">
                                     <?php echo date('M d, Y h:i A', strtotime($session['start_time'])); ?>
                                     <?php if ($session['end_time']): ?>

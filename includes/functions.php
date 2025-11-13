@@ -3,7 +3,6 @@ require_once __DIR__ . '/../config/database.php';
 
 // Generate random 4-digit numeric code
 function generateVerificationCode() {
-    // Generate a random 4-digit number (1000-9999)
     return str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
 }
 
@@ -105,14 +104,16 @@ function getAttendanceReport($session_id) {
     return $data;
 }
 
-// Get session details
+// Get session details (updated with subject info)
 function getSessionDetails($session_id) {
     $conn = getDBConnection();
-    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section, c.semester, h.hall_name, h.room_number
+    $query = "SELECT ats.*, st.staff_name, c.class_name, c.section, c.semester, 
+              h.hall_name, h.room_number, sub.subject_name, sub.subject_code
               FROM attendance_sessions ats
               JOIN staff st ON ats.staff_id = st.staff_id
               JOIN classes c ON ats.class_id = c.class_id
               JOIN seminar_halls h ON ats.hall_id = h.hall_id
+              LEFT JOIN subjects sub ON ats.subject_id = sub.subject_id
               WHERE ats.session_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $session_id);
@@ -153,5 +154,65 @@ function getSeatsForHall($hall_id) {
     $stmt->close();
     closeDBConnection($conn);
     return $seats;
+}
+
+// NEW: Get all subjects
+function getAllSubjects() {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM subjects ORDER BY subject_type, subject_name");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $subjects = [];
+    while ($row = $result->fetch_assoc()) {
+        $subjects[] = $row;
+    }
+    $stmt->close();
+    closeDBConnection($conn);
+    return $subjects;
+}
+
+// NEW: Get student's attendance summary for all subjects
+function getStudentAttendanceSummary($student_id) {
+    $conn = getDBConnection();
+    $query = "SELECT * FROM student_attendance_summary WHERE student_id = ? ORDER BY subject_name";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+    $stmt->close();
+    closeDBConnection($conn);
+    return $data;
+}
+
+// NEW: Get student's attendance for a specific subject
+function getStudentSubjectAttendance($student_id, $subject_id) {
+    $conn = getDBConnection();
+    $query = "SELECT * FROM student_attendance_summary 
+              WHERE student_id = ? AND subject_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $student_id, $subject_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    closeDBConnection($conn);
+    return $data;
+}
+
+// NEW: Get subject details
+function getSubjectDetails($subject_id) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT * FROM subjects WHERE subject_id = ?");
+    $stmt->bind_param("i", $subject_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $subject = $result->fetch_assoc();
+    $stmt->close();
+    closeDBConnection($conn);
+    return $subject;
 }
 ?>

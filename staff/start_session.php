@@ -9,11 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $staff_id = $_SESSION['user_id'];
-$session_name = $_POST['session_name'] ?? '';
+$subject_id = $_POST['subject_id'] ?? 0;
 $class_id = $_POST['class_id'] ?? 0;
 $hall_id = $_POST['hall_id'] ?? 0;
+$comments = trim($_POST['comments'] ?? '');
 
-if (empty($session_name) || empty($class_id) || empty($hall_id)) {
+if (empty($subject_id) || empty($class_id) || empty($hall_id)) {
     header('Location: index.php?error=missing_fields');
     exit();
 }
@@ -25,10 +26,20 @@ if ($active_session) {
     exit();
 }
 
-// Create new session
+// Get subject name to use as session name
+$subject = getSubjectDetails($subject_id);
+if (!$subject) {
+    header('Location: index.php?error=invalid_subject');
+    exit();
+}
+
+$session_name = $subject['subject_name'];
+
+// Create new session with subject
 $conn = getDBConnection();
-$stmt = $conn->prepare("INSERT INTO attendance_sessions (staff_id, class_id, hall_id, session_name, status) VALUES (?, ?, ?, ?, 'active')");
-$stmt->bind_param("iiis", $staff_id, $class_id, $hall_id, $session_name);
+$stmt = $conn->prepare("INSERT INTO attendance_sessions (staff_id, class_id, hall_id, subject_id, session_name, comments, status) 
+                        VALUES (?, ?, ?, ?, ?, ?, 'active')");
+$stmt->bind_param("iiiiss", $staff_id, $class_id, $hall_id, $subject_id, $session_name, $comments);
 
 if ($stmt->execute()) {
     $session_id = $conn->insert_id;
