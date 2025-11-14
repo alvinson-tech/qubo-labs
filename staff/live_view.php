@@ -161,6 +161,105 @@ $hall_seats = getSeatsForHall($session['hall_id']);
         .seat-number {
             font-size: clamp(7px, 1vw, 10px);
         }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h2 {
+            margin: 0;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            width: 250px;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .clear-search-btn {
+            padding: 10px 16px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-search-btn:hover {
+            background: #475569;
+        }
+
+        .highlight-row {
+            animation: highlightOutline 3s ease-in-out;
+        }
+
+        @keyframes highlightOutline {
+            0% {
+                outline: 3px solid var(--primary);
+                outline-offset: 2px;
+            }
+            50% {
+                outline: 3px solid var(--primary);
+                outline-offset: 2px;
+            }
+            100% {
+                outline: 3px solid transparent;
+                outline-offset: 2px;
+            }
+        }
+
+        .no-results-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--danger);
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            background: #fee2e2;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
         
         @media (max-width: 1400px) {
             .seat-box {
@@ -298,7 +397,23 @@ $hall_seats = getSeatsForHall($session['hall_id']);
         </div>
         
         <div class="students-attendance-table">
-            <h2>Live Attendance Records</h2>
+            <div class="table-header">
+                <h2>Live Attendance Records</h2>
+                <div class="search-box">
+                    <input type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="Search USN"
+                        maxlength="20">
+                    <button class="search-btn" onclick="searchStudent()">
+                        Search
+                    </button>
+                    <button class="clear-search-btn" onclick="clearSearch()" style="display: none;" id="clear-btn">
+                        ✕ Clear
+                    </button>
+                </div>
+            </div>
+            <div id="search-message" class="no-results-message" style="display: none;"></div>
             <div class="table-container">
                 <table class="attendance-table">
                     <thead>
@@ -540,6 +655,95 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 });
             }
         }
+
+        // Search functionality
+        function searchStudent() {
+            const searchInput = document.getElementById('search-input').value.trim().toUpperCase();
+            const searchMessage = document.getElementById('search-message');
+            const clearBtn = document.getElementById('clear-btn');
+            
+            if (!searchInput) {
+                searchMessage.textContent = 'Please enter a USN or partial USN to search';
+                searchMessage.style.display = 'block';
+                setTimeout(() => {
+                    searchMessage.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
+            const rows = document.querySelectorAll('#student-list-body tr');
+            let found = false;
+            
+            // Remove previous highlights
+            rows.forEach(row => {
+                row.classList.remove('highlight-row');
+            });
+            
+            // Search through rows
+            for (let row of rows) {
+                const usnCell = row.cells[1]; // USN is in the second column
+                if (usnCell) {
+                    const usn = usnCell.textContent.trim();
+                    
+                    // Check if USN contains the search term
+                    if (usn.includes(searchInput)) {
+                        // Scroll to the row
+                        row.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                        
+                        // Highlight the row
+                        setTimeout(() => {
+                            row.classList.add('highlight-row');
+                        }, 300);
+                        
+                        found = true;
+                        clearBtn.style.display = 'inline-block';
+                        searchMessage.style.display = 'none';
+                        break;
+                    }
+                }
+            }
+            
+            if (!found) {
+                searchMessage.textContent = `No student found with USN containing "${searchInput}"`;
+                searchMessage.style.display = 'block';
+                clearBtn.style.display = 'none';
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-btn').style.display = 'none';
+            document.getElementById('search-message').style.display = 'none';
+            
+            // Remove all highlights
+            const rows = document.querySelectorAll('#student-list-body tr');
+            rows.forEach(row => {
+                row.classList.remove('highlight-row');
+            });
+            
+            // Scroll to top of table
+            document.querySelector('.students-attendance-table').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudent();
+            }
+        });
+
+        // Allow Escape key to clear search
+        document.getElementById('search-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                clearSearch();
+            }
+        });
         
         initSeatingGrid();
         updateLiveData();

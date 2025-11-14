@@ -29,12 +29,19 @@ if (!$my_record) {
     <title>Verify Attendance - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        .code-input-group input {
-            width: 220px;
-            padding: 24px;
-            font-size: 48px;
+        .code-input-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .code-digit-input {
+            width: 60px;
+            height: 70px;
+            padding: 0;
+            font-size: 36px;
             text-align: center;
-            letter-spacing: 18px;
             border: 2px solid var(--border);
             border-radius: 10px;
             font-family: 'DM Sans', sans-serif;
@@ -42,27 +49,40 @@ if (!$my_record) {
             background: white;
             color: var(--text-primary);
             outline: none;
+            transition: all 0.2s;
         }
-        
-        .code-input-group input::placeholder {
-            letter-spacing: 12px;
-            color: #cbd5e1;
-        }
-        
-        .code-input-group input:focus {
+
+        .code-digit-input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: scale(1.05);
         }
-        
-        /* Hide increment/decrement arrows for number input */
-        .code-input-group input::-webkit-outer-spin-button,
-        .code-input-group input::-webkit-inner-spin-button {
+
+        .code-digit-input:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        .code-digit-input::-webkit-outer-spin-button,
+        .code-digit-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        
-        .code-input-group input[type=number] {
+
+        .code-digit-input[type=number] {
             -moz-appearance: textfield;
+        }
+
+        @media (max-width: 768px) {
+            .code-digit-input {
+                width: 50px;
+                height: 60px;
+                font-size: 30px;
+            }
+            
+            .code-input-group {
+                gap: 8px;
+            }
         }
     </style>
 </head>
@@ -95,14 +115,38 @@ if (!$my_record) {
                     
                     <form id="verify-form">
                         <div class="code-input-group">
-                            <input 
-                                type="number" 
-                                id="neighbor-code" 
-                                maxlength="4" 
-                                placeholder="1234" 
-                                pattern="[0-9]{4}"
-                                inputmode="numeric"
-                                required>
+                            <input type="number" 
+                                class="code-digit-input" 
+                                id="digit1" 
+                                maxlength="1" 
+                                min="0" 
+                                max="9"
+                                required
+                                autocomplete="off">
+                            <input type="number" 
+                                class="code-digit-input" 
+                                id="digit2" 
+                                maxlength="1" 
+                                min="0" 
+                                max="9"
+                                required
+                                autocomplete="off">
+                            <input type="number" 
+                                class="code-digit-input" 
+                                id="digit3" 
+                                maxlength="1" 
+                                min="0" 
+                                max="9"
+                                required
+                                autocomplete="off">
+                            <input type="number" 
+                                class="code-digit-input" 
+                                id="digit4" 
+                                maxlength="1" 
+                                min="0" 
+                                max="9"
+                                required
+                                autocomplete="off">
                         </div>
                         
                         <button type="submit" class="btn btn-primary btn-block">Verify Attendance</button>
@@ -123,34 +167,83 @@ if (!$my_record) {
     
     <script>
         const sessionId = <?php echo $session_id; ?>;
-        const codeInput = document.getElementById('neighbor-code');
+        const digitInputs = document.querySelectorAll('.code-digit-input');
         
-        // Limit input to 4 digits
-        codeInput.addEventListener('input', function(e) {
-            // Remove any non-digit characters
-            this.value = this.value.replace(/[^0-9]/g, '');
+        // Handle input for each digit box
+        digitInputs.forEach((input, index) => {
+            // Move to next input on digit entry
+            input.addEventListener('input', function(e) {
+                // Remove any non-digit characters
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                // Limit to 1 digit
+                if (this.value.length > 1) {
+                    this.value = this.value.slice(0, 1);
+                }
+                
+                // Move to next input if digit entered
+                if (this.value.length === 1 && index < digitInputs.length - 1) {
+                    digitInputs[index + 1].focus();
+                }
+            });
             
-            // Limit to 4 digits
-            if (this.value.length > 4) {
-                this.value = this.value.slice(0, 4);
-            }
+            // Handle backspace to move to previous input
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    digitInputs[index - 1].focus();
+                }
+            });
+            
+            // Handle paste - distribute digits across boxes
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                const digits = pastedData.replace(/[^0-9]/g, '').split('');
+                
+                digits.forEach((digit, i) => {
+                    if (index + i < digitInputs.length) {
+                        digitInputs[index + i].value = digit;
+                    }
+                });
+                
+                // Focus on next empty input or last input
+                const nextEmptyIndex = Array.from(digitInputs).findIndex((inp, idx) => idx > index && inp.value === '');
+                if (nextEmptyIndex !== -1) {
+                    digitInputs[nextEmptyIndex].focus();
+                } else {
+                    digitInputs[digitInputs.length - 1].focus();
+                }
+            });
+            
+            // Select all text on focus
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+            
+            // Prevent non-numeric input
+            input.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
+                    e.preventDefault();
+                }
+            });
         });
         
-        // Prevent paste of non-numeric values
-        codeInput.addEventListener('paste', function(e) {
-            e.preventDefault();
-            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-            const numericOnly = pastedText.replace(/[^0-9]/g, '').slice(0, 4);
-            this.value = numericOnly;
+        // Auto-focus first input on page load
+        window.addEventListener('load', function() {
+            digitInputs[0].focus();
         });
         
         document.getElementById('verify-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const code = document.getElementById('neighbor-code').value.trim();
+            // Collect all digits
+            const code = Array.from(digitInputs).map(input => input.value).join('');
             
             if (code.length !== 4) {
-                showError('Please enter a valid 4-digit code');
+                showError('Please enter all 4 digits');
+                // Focus on first empty input
+                const firstEmpty = Array.from(digitInputs).find(input => input.value === '');
+                if (firstEmpty) firstEmpty.focus();
                 return;
             }
             
@@ -163,6 +256,9 @@ if (!$my_record) {
         });
         
         function verifyWithCode(code) {
+            // Disable all inputs during verification
+            digitInputs.forEach(input => input.disabled = true);
+            
             fetch('../api/verify_attendance.php', {
                 method: 'POST',
                 headers: {
@@ -183,10 +279,19 @@ if (!$my_record) {
                     }, 2000);
                 } else {
                     showError(data.message);
+                    // Re-enable inputs and clear them
+                    digitInputs.forEach(input => {
+                        input.disabled = false;
+                        input.value = '';
+                    });
+                    digitInputs[0].focus();
                 }
             })
             .catch(error => {
                 showError('Error verifying attendance. Please try again.');
+                digitInputs.forEach(input => {
+                    input.disabled = false;
+                });
             });
         }
         

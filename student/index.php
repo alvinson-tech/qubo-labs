@@ -92,6 +92,26 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             text-align: center;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
+
+        .overall-attendance-card.critical {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .overall-attendance-card.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .overall-attendance-card.good {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .overall-attendance-card.excellent {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
         
         .overall-attendance-card h2 {
             font-size: 16px;
@@ -133,7 +153,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 800;
             color: white;
         }
@@ -298,7 +318,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             }
 
             .overall-radial-progress .percentage {
-                font-size: 32px;
+                font-size: 28px;
             }
         }
         
@@ -514,6 +534,22 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
     <?php closeDBConnection($conn); ?>
     
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const overallCard = document.querySelector('.overall-attendance-card');
+            const percentage = parseFloat(document.querySelector('.overall-radial-progress .percentage').textContent);
+            
+            overallCard.classList.remove('critical', 'warning', 'good', 'excellent');
+            
+            if (percentage < 75) {
+                overallCard.classList.add('critical');
+            } else if (percentage < 80) {
+                overallCard.classList.add('warning');
+            } else if (percentage < 85) {
+                overallCard.classList.add('good');
+            } else {
+                overallCard.classList.add('excellent');
+            }
+        });
         // Auto-refresh every 10 seconds to check for new sessions
         setTimeout(function() {
             location.reload();
