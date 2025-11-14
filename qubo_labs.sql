@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 14, 2025 at 04:05 AM
+-- Generation Time: Nov 14, 2025 at 06:04 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -464,7 +464,7 @@ CREATE TABLE `staff` (
 --
 
 INSERT INTO `staff` (`staff_id`, `staff_number`, `staff_name`, `password`, `department`, `session_token`, `last_login`, `created_at`) VALUES
-(1, 'REKH2699', 'Prof. Rekha P', 'Pro699', 'Computer Science', NULL, NULL, '2025-11-12 11:42:20'),
+(1, 'REKH2699', 'Prof. Rekha P', 'Pro699', 'Computer Science', NULL, '2025-11-14 03:39:39', '2025-11-12 11:42:20'),
 (2, 'ARFA2700', 'Prof. Arfa Bhandari', 'Pro700', 'Computer Science', NULL, NULL, '2025-11-12 11:42:20'),
 (3, 'HELE2701', 'Prof. Helan', 'Pro701', 'Computer Science', NULL, NULL, '2025-11-13 07:13:29'),
 (4, 'ARNA2702', 'Prof. Arnab Tah', 'Pro702', 'Computer Science', NULL, NULL, '2025-11-13 07:13:29'),
@@ -506,10 +506,10 @@ INSERT INTO `students` (`student_id`, `usn_number`, `student_name`, `password`, 
 (9, '1MJ23CS009', 'AKASH SURENDRA AINAPUR', 'Aka009', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (10, '1MJ23CS010', 'AKSHATA SURESH VITTAPPANAVAR', 'Aks010', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (11, '1MJ23CS011', 'AKSHAY H', 'Aks011', 1, NULL, NULL, '2025-11-13 07:10:20'),
-(12, '1MJ23CS012', 'ALVIN SONNY', 'Alv012', 1, NULL, NULL, '2025-11-13 07:10:20'),
+(12, '1MJ23CS012', 'ALVIN SONNY', 'Alv012', 1, '5a3e456437946a168a87b530114098fc2f3b564665ef001842e491496393a3ef', '2025-11-14 03:40:37', '2025-11-13 07:10:20'),
 (13, '1MJ23CS013', 'AMULYA G GOUDA', 'Amu013', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (14, '1MJ23CS014', 'ANAGHASHREE G K', 'Ana014', 1, NULL, NULL, '2025-11-13 07:10:20'),
-(15, '1MJ23CS015', 'ANANYA SANJIV', 'Ana015', 1, NULL, NULL, '2025-11-13 07:10:20'),
+(15, '1MJ23CS015', 'ANANYA SANJIV', 'Ana015', 1, NULL, '2025-11-14 03:43:48', '2025-11-13 07:10:20'),
 (16, '1MJ23CS016', 'ANIKETHA H N', 'Ani016', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (17, '1MJ23CS017', 'ANKITA CHARAN PAHADI', 'Ank017', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (18, '1MJ23CS018', 'ANUSHREE D S', 'Anu018', 1, NULL, NULL, '2025-11-13 07:10:20'),
@@ -3587,7 +3587,7 @@ ALTER TABLE `attendance_records`
 -- AUTO_INCREMENT for table `attendance_sessions`
 --
 ALTER TABLE `attendance_sessions`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `classes`
