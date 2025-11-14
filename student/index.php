@@ -77,6 +77,197 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
     <title>Student Dashboard - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logout-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: #991b1b;
+            font-size: 14px;
+        }
+        
+        .logout-timer.warning {
+            background: #fef3c7;
+            color: #92400e;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        .logout-timer.critical {
+            background: #fee2e2;
+            color: #991b1b;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .timer-icon {
+            font-size: 18px;
+        }
+        
+        .admin-logout-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .admin-logout-btn:hover {
+            background: #475569;
+            transform: translateY(-1px);
+        }
+        
+        .admin-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .admin-modal-overlay.active {
+            display: flex;
+        }
+        
+        .admin-modal-content {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 16px;
+            max-width: 650px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .admin-modal-content h2 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+        }
+        
+        .admin-modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 35px;
+            text-align: center;
+            font-size: 15px;
+        }
+        
+        .admin-code-input-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .admin-code-digit {
+            width: 60px;
+            height: 70px;
+            padding: 0;
+            font-size: 36px;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 800;
+            background: white;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .admin-code-digit:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: scale(1.05);
+        }
+
+        .admin-code-digit::-webkit-outer-spin-button,
+        .admin-code-digit::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .admin-code-digit[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        .admin-modal-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 25px;
+        }
+        
+        .admin-modal-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        
+        .admin-modal-btn-primary {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .admin-modal-btn-primary:hover {
+            background: #dc2626;
+        }
+        
+        .admin-modal-btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .admin-modal-btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .admin-error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            display: none;
+        }
+
         .dashboard-grid {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -320,6 +511,12 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             .overall-radial-progress .percentage {
                 font-size: 28px;
             }
+            
+            .admin-code-digit {
+                width: 45px;
+                height: 55px;
+                font-size: 28px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -354,7 +551,93 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         <div class="nav-brand">Qubo Labs - Student</div>
         <div class="nav-user">
             <span>Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-            <a href="../logout.php" class="btn btn-sm">Logout</a>
+            <div class="timer-container">
+                <div class="logout-timer" id="logout-timer">
+                    <span class="timer-icon">⏰</span>
+                    <span id="timer-display">10:00</span>
+                </div>
+                <button class="admin-logout-btn" onclick="showAdminModal()">
+                    🔓 Logout
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Logout Modal -->
+    <div id="admin-modal" class="admin-modal-overlay">
+        <div class="admin-modal-content">
+            <h2>🔐 Admin Logout</h2>
+            <p>Enter the admin code to logout immediately</p>
+            
+            <div class="admin-code-input-group">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-1" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-2" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-3" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-4" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-5" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-6" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-7" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+                <input type="number" 
+                    class="admin-code-digit" 
+                    id="admin-digit-8" 
+                    maxlength="1" 
+                    min="0" 
+                    max="9"
+                    autocomplete="off">
+            </div>
+            
+            <div class="admin-error-message" id="admin-error"></div>
+            
+            <div class="admin-modal-buttons">
+                <button class="admin-modal-btn admin-modal-btn-secondary" onclick="closeAdminModal()">
+                    Cancel
+                </button>
+                <button class="admin-modal-btn admin-modal-btn-primary" onclick="verifyAdminCode()">
+                    Logout
+                </button>
+            </div>
         </div>
     </div>
     
@@ -534,7 +817,210 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
     <?php closeDBConnection($conn); ?>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Timer configuration
+        const LOGOUT_TIME = 10 * 60; // 10 minutes in seconds
+        let timeRemaining = LOGOUT_TIME;
+        let timerInterval;
+        
+        // Admin code
+        const ADMIN_CODE = '19150431';
+        
+        // Start the logout timer
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                // Update timer styling based on time remaining
+                const timerElement = document.getElementById('logout-timer');
+                if (timeRemaining <= 60) {
+                    timerElement.classList.add('critical');
+                    timerElement.classList.remove('warning');
+                } else if (timeRemaining <= 180) {
+                    timerElement.classList.add('warning');
+                    timerElement.classList.remove('critical');
+                } else {
+                    timerElement.classList.remove('warning', 'critical');
+                }
+                
+                // Auto logout when time reaches 0
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    performLogout();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').textContent = display;
+        }
+        
+        function performLogout() {
+            window.location.href = '../logout.php';
+        }
+        
+        // Admin modal functions
+        function showAdminModal() {
+            document.getElementById('admin-modal').classList.add('active');
+            document.getElementById('admin-digit-1').focus();
+            document.getElementById('admin-error').style.display = 'none';
+            // Clear all inputs
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById('admin-digit-' + i).value = '';
+            }
+        }
+        
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.remove('active');
+            document.getElementById('admin-error').style.display = 'none';
+        }
+        
+        function verifyAdminCode() {
+            let code = '';
+            for (let i = 1; i <= 8; i++) {
+                const digit = document.getElementById('admin-digit-' + i).value;
+                if (!digit) {
+                    showAdminError('Please enter all 8 digits');
+                    document.getElementById('admin-digit-' + i).focus();
+                    return;
+                }
+                code += digit;
+            }
+            
+            if (code === ADMIN_CODE) {
+                clearInterval(timerInterval);
+                performLogout();
+            } else {
+                showAdminError('Incorrect admin code. Please try again.');
+                // Clear all inputs
+                for (let i = 1; i <= 8; i++) {
+                    document.getElementById('admin-digit-' + i).value = '';
+                }
+                document.getElementById('admin-digit-1').focus();
+            }
+        }
+        
+        function showAdminError(message) {
+            const errorElement = document.getElementById('admin-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        // Setup admin code input handlers
+        const adminDigits = [];
+        for (let i = 1; i <= 8; i++) {
+            const input = document.getElementById('admin-digit-' + i);
+            adminDigits.push(input);
+            
+            // Move to next input on digit entry
+            input.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                if (this.value.length > 1) {
+                    this.value = this.value.slice(0, 1);
+                }
+                
+                if (this.value.length === 1 && i < 8) {
+                    document.getElementById('admin-digit-' + (i + 1)).focus();
+                }
+            });
+            
+            // Handle backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && i > 1) {
+                    document.getElementById('admin-digit-' + (i - 1)).focus();
+                }
+                
+                // Submit on Enter key if on last digit
+                if (e.key === 'Enter' && i === 8) {
+                    verifyAdminCode();
+                }
+            });
+            
+            // Handle paste
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                const digits = pastedData.replace(/[^0-9]/g, '').split('');
+                
+                digits.forEach((digit, idx) => {
+                    if (i + idx <= 8) {
+                        document.getElementById('admin-digit-' + (i + idx)).value = digit;
+                    }
+                });
+                
+                const nextEmptyIndex = i + digits.length;
+                if (nextEmptyIndex <= 8) {
+                    document.getElementById('admin-digit-' + nextEmptyIndex).focus();
+                }
+            });
+            
+            // Select all on focus
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+            
+            // Prevent non-numeric input
+            input.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Enter') {
+                    e.preventDefault();
+                }
+            });
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAdminModal();
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('admin-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAdminModal();
+            }
+        });
+        
+        // Prevent page unload/close without admin code
+        window.addEventListener('beforeunload', function(e) {
+            if (timeRemaining > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+        
+        // Disable browser back button
+        history.pushState(null, null, location.href);
+        window.addEventListener('popstate', function() {
+            history.pushState(null, null, location.href);
+        });
+        
+        // Disable right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // Disable common keyboard shortcuts for closing
+        document.addEventListener('keydown', function(e) {
+            // Disable Ctrl+W, Ctrl+Q, Alt+F4
+            if ((e.ctrlKey && (e.key === 'w' || e.key === 'q')) || 
+                (e.altKey && e.key === 'F4')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Start the timer on page load
+        window.addEventListener('load', function() {
+            startTimer();
+            
+            // Set overall attendance card color
             const overallCard = document.querySelector('.overall-attendance-card');
             const percentage = parseFloat(document.querySelector('.overall-radial-progress .percentage').textContent);
             
@@ -550,10 +1036,6 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
                 overallCard.classList.add('excellent');
             }
         });
-        // Auto-refresh every 10 seconds to check for new sessions
-        setTimeout(function() {
-            location.reload();
-        }, 10000);
     </script>
 </body>
 </html>
