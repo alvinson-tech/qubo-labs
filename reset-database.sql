@@ -1,6 +1,5 @@
 -- ============================================
 -- COMPLETE DATABASE RESET SCRIPT
--- Use this to start the attendance system from scratch
 -- ============================================
 
 USE qubo_labs;
@@ -19,6 +18,11 @@ ALTER TABLE attendance_sessions AUTO_INCREMENT = 1;
 -- This logs out all students and staff from the system
 UPDATE students SET session_token = NULL, last_login = NULL;
 UPDATE staff SET session_token = NULL, last_login = NULL;
+
+-- ============================================
+-- SUCCESS MESSAGE
+-- ============================================
+SELECT 'Database reset completed successfully! All attendance data cleared and all users logged out.' as Status;
 
 -- ============================================
 -- OPTIONAL: Complete System Reset
@@ -47,25 +51,3 @@ DELETE FROM seminar_halls;
 ALTER TABLE seminar_seats AUTO_INCREMENT = 1;
 ALTER TABLE seminar_halls AUTO_INCREMENT = 1;
 */
-
--- ============================================
--- VERIFICATION QUERIES
--- Run these to verify the reset was successful
--- ============================================
-
--- Check attendance records (should be 0)
-SELECT COUNT(*) as attendance_records_count FROM attendance_records;
-
--- Check attendance sessions (should be 0)
-SELECT COUNT(*) as attendance_sessions_count FROM attendance_sessions;
-
--- Check logged in students (should be 0)
-SELECT COUNT(*) as logged_in_students FROM students WHERE session_token IS NOT NULL;
-
--- Check logged in staff (should be 0)
-SELECT COUNT(*) as logged_in_staff FROM staff WHERE session_token IS NOT NULL;
-
--- ============================================
--- SUCCESS MESSAGE
--- ============================================
-SELECT 'Database reset completed successfully! All attendance data cleared and all users logged out.' as Status;

@@ -31,8 +31,26 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Get attendance records
-$attendance_data = getLiveAttendanceData($session_id);
+// Get attendance records (modified to show N/A for virtual seats)
+$query = "SELECT ar.*, 
+          CASE WHEN s.seat_number = 'VIRTUAL' THEN 'N/A' ELSE s.seat_number END as seat_number, 
+          s.row_number, 
+          s.seat_position, 
+          st.student_name, 
+          st.usn_number
+          FROM attendance_records ar
+          LEFT JOIN seminar_seats s ON ar.seat_id = s.seat_id
+          JOIN students st ON ar.student_id = st.student_id
+          WHERE ar.session_id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $session_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$attendance_data = [];
+while ($row = $result->fetch_assoc()) {
+    $attendance_data[] = $row;
+}
+$stmt->close();
 
 // Map attendance data by student_id
 $attendance_map = [];

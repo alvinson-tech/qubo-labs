@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 13, 2025 at 12:28 PM
+-- Generation Time: Nov 14, 2025 at 02:54 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -461,7 +461,7 @@ CREATE TABLE `staff` (
 --
 
 INSERT INTO `staff` (`staff_id`, `staff_number`, `staff_name`, `password`, `department`, `session_token`, `last_login`, `created_at`) VALUES
-(1, 'REKH2699', 'Prof. Rekha P', 'Pro699', 'Computer Science', 'f65b3e5bac532d4fe1cde312aac5fe2a32a89a4ccccca96c7d8e32140d9fc0e8', '2025-11-13 11:22:07', '2025-11-12 11:42:20'),
+(1, 'REKH2699', 'Prof. Rekha P', 'Pro699', 'Computer Science', NULL, NULL, '2025-11-12 11:42:20'),
 (2, 'ARFA2700', 'Prof. Arfa Bhandari', 'Pro700', 'Computer Science', NULL, NULL, '2025-11-12 11:42:20'),
 (3, 'HELE2701', 'Prof. Helan', 'Pro701', 'Computer Science', NULL, NULL, '2025-11-13 07:13:29'),
 (4, 'ARNA2702', 'Prof. Arnab Tah', 'Pro702', 'Computer Science', NULL, NULL, '2025-11-13 07:13:29'),
@@ -503,7 +503,7 @@ INSERT INTO `students` (`student_id`, `usn_number`, `student_name`, `password`, 
 (9, '1MJ23CS009', 'AKASH SURENDRA AINAPUR', 'Aka009', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (10, '1MJ23CS010', 'AKSHATA SURESH VITTAPPANAVAR', 'Aks010', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (11, '1MJ23CS011', 'AKSHAY H', 'Aks011', 1, NULL, NULL, '2025-11-13 07:10:20'),
-(12, '1MJ23CS012', 'ALVIN SONNY', 'Alv012', 1, NULL, '2025-11-13 11:22:13', '2025-11-13 07:10:20'),
+(12, '1MJ23CS012', 'ALVIN SONNY', 'Alv012', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (13, '1MJ23CS013', 'AMULYA G GOUDA', 'Amu013', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (14, '1MJ23CS014', 'ANAGHASHREE G K', 'Ana014', 1, NULL, NULL, '2025-11-13 07:10:20'),
 (15, '1MJ23CS015', 'ANANYA SANJIV', 'Ana015', 1, NULL, NULL, '2025-11-13 07:10:20'),
@@ -3620,7 +3620,7 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `student_subjects`
 --
 ALTER TABLE `student_subjects`
-  MODIFY `mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4096;
+  MODIFY `mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2661;
 
 --
 -- AUTO_INCREMENT for table `subjects`

@@ -133,7 +133,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 42px;
+            font-size: 36px;
             font-weight: 800;
             color: white;
         }
@@ -295,6 +295,10 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             
             .radial-progress .percentage {
                 font-size: 18px;
+            }
+
+            .overall-radial-progress .percentage {
+                font-size: 32px;
             }
         }
         
