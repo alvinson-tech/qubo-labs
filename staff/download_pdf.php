@@ -431,7 +431,7 @@ header('Content-Type: text/html; charset=utf-8');
             </div>
             <div class="info-item">
                 <span class="info-label">Venue:</span>
-                <span class="info-value"><?php echo $session['hall_name'] ? htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')') : 'Manual Entry'; ?></span>
+                <span class="info-value"><?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Instructor:</span>

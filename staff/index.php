@@ -41,14 +41,14 @@ $halls = getSeminarHalls();
 // Get all subjects
 $subjects = getAllSubjects();
 
-// Get recent sessions (updated to include subject info)
+// Get recent sessions (only QR-based sessions with hall_id)
 $stmt = $conn->prepare("SELECT ats.*, c.class_name, c.section, c.semester, h.hall_name, h.room_number,
                         sub.subject_name, sub.subject_code
                         FROM attendance_sessions ats
                         JOIN classes c ON ats.class_id = c.class_id
-                        LEFT JOIN seminar_halls h ON ats.hall_id = h.hall_id
-                        LEFT JOIN subjects sub ON ats.subject_id = sub.subject_id
-                        WHERE ats.staff_id = ?
+                        JOIN seminar_halls h ON ats.hall_id = h.hall_id
+                        JOIN subjects sub ON ats.subject_id = sub.subject_id
+                        WHERE ats.staff_id = ? AND ats.hall_id IS NOT NULL
                         ORDER BY ats.start_time DESC
                         LIMIT 5");
 $stmt->bind_param("i", $staff_id);
@@ -70,13 +70,6 @@ closeDBConnection($conn);
     <title>Staff Dashboard - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-        
         .form-row-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -84,23 +77,8 @@ closeDBConnection($conn);
             margin-bottom: 20px;
         }
         
-        .form-row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
         @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .form-row-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-row-2 {
                 grid-template-columns: 1fr;
             }
         }
@@ -121,16 +99,8 @@ closeDBConnection($conn);
             font-weight: 700;
             letter-spacing: 0.5px;
             margin-right: 8px;
-        }
-        
-        .badge-qr {
             background: #dbeafe;
             color: #1e40af;
-        }
-        
-        .badge-manual {
-            background: #fef3c7;
-            color: #92400e;
         }
     </style>
 </head>
@@ -148,168 +118,91 @@ closeDBConnection($conn);
             <h1>Staff Dashboard</h1>
         </div>
         
-        <div class="dashboard-grid">
-            <!-- QR-Based Session -->
-            <div class="action-section">
-                <h2>Start New Attendance Session</h2>
-                <form action="start_session.php" method="POST" class="session-form">
-                    <div class="form-row-3">
-                        <div class="form-group">
-                            <label for="subject_id">Select Subject *</label>
-                            <select id="subject_id" name="subject_id" required>
-                                <option value="">Choose a subject...</option>
-                                <?php 
-                                $current_type = '';
-                                foreach ($subjects as $subject): 
-                                    if ($current_type !== $subject['subject_type']) {
-                                        if ($current_type !== '') {
-                                            echo '</optgroup>';
-                                        }
-                                        $current_type = $subject['subject_type'];
-                                        echo '<optgroup label="' . ucfirst(htmlspecialchars($current_type)) . ' Subjects">';
+        <!-- Start New Attendance Session -->
+        <div class="action-section">
+            <h2>Start New Attendance Session</h2>
+            <form action="start_session.php" method="POST" class="session-form">
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="subject_id">Select Subject *</label>
+                        <select id="subject_id" name="subject_id" required>
+                            <option value="">Choose a subject...</option>
+                            <?php 
+                            $current_type = '';
+                            foreach ($subjects as $subject): 
+                                if ($current_type !== $subject['subject_type']) {
+                                    if ($current_type !== '') {
+                                        echo '</optgroup>';
                                     }
-                                ?>
-                                    <option value="<?php echo $subject['subject_id']; ?>">
-                                        <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['subject_name']); ?>
-                                    </option>
-                                <?php 
-                                endforeach;
-                                if ($current_type !== '') {
-                                    echo '</optgroup>';
+                                    $current_type = $subject['subject_type'];
+                                    echo '<optgroup label="' . ucfirst(htmlspecialchars($current_type)) . ' Subjects">';
                                 }
-                                ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="class_id">Select Class *</label>
-                            <select id="class_id" name="class_id" required>
-                                <option value="">Choose a class...</option>
-                                <?php 
-                                $current_semester = '';
-                                foreach ($classes as $class): 
-                                    if ($current_semester !== $class['semester']) {
-                                        if ($current_semester !== '') {
-                                            echo '</optgroup>';
-                                        }
-                                        $current_semester = $class['semester'];
-                                        echo '<optgroup label="' . htmlspecialchars($current_semester) . '">';
-                                    }
-                                ?>
-                                    <option value="<?php echo $class['class_id']; ?>">
-                                        <?php echo htmlspecialchars($class['class_name'] . ' - Section ' . $class['section']); ?>
-                                    </option>
-                                <?php 
-                                endforeach;
-                                if ($current_semester !== '') {
-                                    echo '</optgroup>';
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="hall_id">Select Seminar Hall *</label>
-                            <select id="hall_id" name="hall_id" required>
-                                <option value="">Choose a seminar hall...</option>
-                                <?php foreach ($halls as $hall): ?>
-                                    <option value="<?php echo $hall['hall_id']; ?>">
-                                        <?php echo htmlspecialchars($hall['hall_name'] . ' (Room ' . $hall['room_number'] . ')'); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                            ?>
+                                <option value="<?php echo $subject['subject_id']; ?>">
+                                    <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['subject_name']); ?>
+                                </option>
+                            <?php 
+                            endforeach;
+                            if ($current_type !== '') {
+                                echo '</optgroup>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="comments">Comments (Optional)</label>
-                        <textarea id="comments" 
-                                  name="comments" 
-                                  rows="3" 
-                                  placeholder="Add any additional notes or instructions for students..."
-                                  style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; background: white; color: var(--text-primary);"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-large">
-                        ▶️ Start QR Attendance Session
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Manual Entry -->
-            <div class="action-section">
-                <h2>Manual Attendance Entry</h2>
-                <form action="create_manual_session.php" method="POST" class="session-form">
-                    <div class="form-row-2">
-                        <div class="form-group">
-                            <label for="manual_subject_id">Select Subject *</label>
-                            <select id="manual_subject_id" name="subject_id" required>
-                                <option value="">Choose a subject...</option>
-                                <?php 
-                                $current_type = '';
-                                foreach ($subjects as $subject): 
-                                    if ($current_type !== $subject['subject_type']) {
-                                        if ($current_type !== '') {
-                                            echo '</optgroup>';
-                                        }
-                                        $current_type = $subject['subject_type'];
-                                        echo '<optgroup label="' . ucfirst(htmlspecialchars($current_type)) . ' Subjects">';
+                        <label for="class_id">Select Class *</label>
+                        <select id="class_id" name="class_id" required>
+                            <option value="">Choose a class...</option>
+                            <?php 
+                            $current_semester = '';
+                            foreach ($classes as $class): 
+                                if ($current_semester !== $class['semester']) {
+                                    if ($current_semester !== '') {
+                                        echo '</optgroup>';
                                     }
-                                ?>
-                                    <option value="<?php echo $subject['subject_id']; ?>">
-                                        <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['subject_name']); ?>
-                                    </option>
-                                <?php 
-                                endforeach;
-                                if ($current_type !== '') {
-                                    echo '</optgroup>';
+                                    $current_semester = $class['semester'];
+                                    echo '<optgroup label="' . htmlspecialchars($current_semester) . '">';
                                 }
-                                ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="manual_class_id">Select Class *</label>
-                            <select id="manual_class_id" name="class_id" required>
-                                <option value="">Choose a class...</option>
-                                <?php 
-                                $current_semester = '';
-                                foreach ($classes as $class): 
-                                    if ($current_semester !== $class['semester']) {
-                                        if ($current_semester !== '') {
-                                            echo '</optgroup>';
-                                        }
-                                        $current_semester = $class['semester'];
-                                        echo '<optgroup label="' . htmlspecialchars($current_semester) . '">';
-                                    }
-                                ?>
-                                    <option value="<?php echo $class['class_id']; ?>">
-                                        <?php echo htmlspecialchars($class['class_name'] . ' - Section ' . $class['section']); ?>
-                                    </option>
-                                <?php 
-                                endforeach;
-                                if ($current_semester !== '') {
-                                    echo '</optgroup>';
-                                }
-                                ?>
-                            </select>
-                        </div>
+                            ?>
+                                <option value="<?php echo $class['class_id']; ?>">
+                                    <?php echo htmlspecialchars($class['class_name'] . ' - Section ' . $class['section']); ?>
+                                </option>
+                            <?php 
+                            endforeach;
+                            if ($current_semester !== '') {
+                                echo '</optgroup>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="manual_comments">Comments (Optional)</label>
-                        <textarea id="manual_comments" 
-                                  name="comments" 
-                                  rows="3" 
-                                  placeholder="Add any additional notes..."
-                                  style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; background: white; color: var(--text-primary);"></textarea>
+                        <label for="hall_id">Select Seminar Hall *</label>
+                        <select id="hall_id" name="hall_id" required>
+                            <option value="">Choose a seminar hall...</option>
+                            <?php foreach ($halls as $hall): ?>
+                                <option value="<?php echo $hall['hall_id']; ?>">
+                                    <?php echo htmlspecialchars($hall['hall_name'] . ' (Room ' . $hall['room_number'] . ')'); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    
-                    <button type="submit" class="btn btn-secondary btn-large">
-                        ✏️ Start Manual Marking
-                    </button>
-                </form>
-            </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comments">Comments (Optional)</label>
+                    <textarea id="comments" 
+                              name="comments" 
+                              rows="3" 
+                              placeholder="Add any additional notes or instructions for students..."
+                              style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: vertical; background: white; color: var(--text-primary);"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-large">
+                    ▶️ Start Attendance Session
+                </button>
+            </form>
         </div>
         
         <div class="recent-sessions">
@@ -323,20 +216,14 @@ closeDBConnection($conn);
                             <div class="session-info">
                                 <?php if (!empty($session['subject_code'])): ?>
                                     <p class="session-subject">
-                                        <?php if ($session['hall_id']): ?>
-                                            <span class="session-type-badge badge-qr">QR</span>
-                                        <?php else: ?>
-                                            <span class="session-type-badge badge-manual">MANUAL</span>
-                                        <?php endif; ?>
+                                        <span class="session-type-badge">QR</span>
                                         <?php echo htmlspecialchars($session['subject_code']); ?>
                                     </p>
                                 <?php endif; ?>
                                 <h3><?php echo htmlspecialchars($session['subject_name'] ?? $session['session_name']); ?></h3>
                                 <p class="session-meta">
                                     <?php echo htmlspecialchars($session['class_name'] . ' - Section ' . $session['section'] . ' (' . $session['semester'] . ')'); ?>
-                                    <?php if ($session['hall_name']): ?>
-                                        | <?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?>
-                                    <?php endif; ?>
+                                    | <?php echo htmlspecialchars($session['hall_name'] . ' (Room ' . $session['room_number'] . ')'); ?>
                                 </p>
                                 <?php if (!empty($session['comments'])): ?>
                                     <p style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; font-style: italic;">
@@ -353,13 +240,8 @@ closeDBConnection($conn);
                             <div class="session-actions">
                                 <?php if ($session['status'] === 'active'): ?>
                                     <span class="badge badge-active">Active</span>
-                                    <?php if ($session['hall_id']): ?>
-                                        <a href="live_view.php?session_id=<?php echo $session['session_id']; ?>" 
-                                           class="btn btn-primary">View Live</a>
-                                    <?php else: ?>
-                                        <a href="manual_entry.php?session_id=<?php echo $session['session_id']; ?>" 
-                                           class="btn btn-primary">Continue Marking</a>
-                                    <?php endif; ?>
+                                    <a href="live_view.php?session_id=<?php echo $session['session_id']; ?>" 
+                                       class="btn btn-primary">View Live</a>
                                 <?php else: ?>
                                     <span class="badge badge-ended">Ended</span>
                                     <a href="download_pdf.php?session_id=<?php echo $session['session_id']; ?>" 
