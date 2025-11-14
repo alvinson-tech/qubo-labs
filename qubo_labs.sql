@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 14, 2025 at 02:54 AM
+-- Generation Time: Nov 14, 2025 at 04:05 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -437,7 +437,10 @@ INSERT INTO `seminar_seats` (`seat_id`, `hall_id`, `seat_number`, `row_number`, 
 (309, 3, 'E17', 5, 17, 'E17_H3'),
 (310, 3, 'E18', 5, 18, 'E18_H3'),
 (311, 3, 'E19', 5, 19, 'E19_H3'),
-(312, 3, 'E20', 5, 20, 'E20_H3');
+(312, 3, 'E20', 5, 20, 'E20_H3'),
+(313, 1, 'VIRTUAL', 0, 0, 'VIRTUAL_1'),
+(314, 2, 'VIRTUAL', 0, 0, 'VIRTUAL_2'),
+(315, 3, 'VIRTUAL', 0, 0, 'VIRTUAL_3');
 
 -- --------------------------------------------------------
 
@@ -3602,7 +3605,7 @@ ALTER TABLE `seminar_halls`
 -- AUTO_INCREMENT for table `seminar_seats`
 --
 ALTER TABLE `seminar_seats`
-  MODIFY `seat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=313;
+  MODIFY `seat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=316;
 
 --
 -- AUTO_INCREMENT for table `staff`
