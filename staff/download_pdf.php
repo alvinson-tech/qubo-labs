@@ -390,20 +390,139 @@ header('Content-Type: text/html; charset=utf-8');
         }
         
         @media print {
+            /* Force print background colors and images */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
             body {
                 padding: 20px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
+            
             .action-buttons {
                 display: none;
             }
+            
+            .session-card,
+            .auditorium-layout,
+            .students-attendance-table {
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+            }
+            
+            /* Force stat card colors to print */
             .stat-card {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
                 box-shadow: none;
                 border: 1px solid #e2e8f0;
+                page-break-inside: avoid;
             }
-        }
-        
-        @page {
-            margin: 15mm;
+            
+            .stat-card.success {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .stat-card.warning {
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Ensure default stat card keeps blue color */
+            .stat-card:not(.success):not(.warning) {
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Force status badge colors */
+            .status-badge {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .status-verified {
+                background: #dcfce7 !important;
+                color: #166534 !important;
+            }
+            
+            .status-scanned {
+                background: #fef3c7 !important;
+                color: #92400e !important;
+            }
+            
+            .status-not-verified {
+                background: #fee2e2 !important;
+                color: #991b1b !important;
+            }
+            
+            /* Force header colors */
+            .document-header {
+                border-bottom: 3px solid #2563eb !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .subject-badge {
+                background: #dbeafe !important;
+                color: #1e40af !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Force table header colors */
+            thead {
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            th {
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Force absentees table colors */
+            .absentees-table thead {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .absentees-table tbody tr {
+                background: #fef2f2 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Force comment section colors */
+            .comments-section {
+                background: #fffbeb !important;
+                border: 1px solid #fde68a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Force session info colors */
+            .session-info {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            @page {
+                margin: 15mm;
+                size: A4;
+            }
         }
     </style>
 </head>
@@ -468,10 +587,6 @@ header('Content-Type: text/html; charset=utf-8');
         <div class="stat-card success">
             <div class="stat-number"><?php echo count($records); ?></div>
             <div class="stat-label">Present</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number"><?php echo count(array_filter($records, function($r) { return $r['status'] === 'verified'; })); ?></div>
-            <div class="stat-label">Verified</div>
         </div>
         <div class="stat-card warning">
             <div class="stat-number"><?php echo count($absentees); ?></div>
