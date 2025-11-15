@@ -77,37 +77,200 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
     <title>Student Dashboard - Qubo Labs</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
+        /* Enhanced Navbar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-user-info {
+            text-align: right;
+            line-height: 1.3;
+        }
+
+        .nav-user-greeting {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .nav-user-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .hamburger-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: #1e40af;
+            transform: scale(1.05);
+        }
+
+        .hamburger-btn span {
+            width: 20px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Sidebar Styles */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu-link:hover {
+            background: #e2e8f0;
+            border-color: var(--primary);
+            transform: translateX(-4px);
+        }
+
+        .sidebar-menu-icon {
+            font-size: 20px;
+        }
+
+        .sidebar-menu-link.danger {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: var(--danger);
+        }
+
+        .sidebar-menu-link.danger:hover {
+            background: #fecaca;
+            border-color: var(--danger);
+        }
+
+        .sidebar-menu-link.disabled {
+            opacity: 0.5;
+            cursor: pointer; /* Changed from not-allowed */
+            /* Removed pointer-events: none; so it's still clickable */
+        }
+
         .timer-container {
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-        
-        .student-logout-btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: not-allowed;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            opacity: 0.5;
-        }
-        
-        .student-logout-btn.enabled {
-            cursor: pointer;
-            opacity: 1;
-            background: var(--danger);
-        }
-        
-        .student-logout-btn.enabled:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
         }
         
         .logout-confirmation-modal {
@@ -635,14 +798,45 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
     </style>
 </head>
 <body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>MENU</h2>
+            <p>Student Dashboard Options</p>
+        </div>
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <a href="setup_fingerprint.php" class="sidebar-menu-link">
+                        <span class="sidebar-menu-icon">🔒</span>
+                        <span>Fingerprint Setup</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <div class="sidebar-menu-link danger" id="sidebar-logout-btn" onclick="handleLogoutClick()">
+                        <span class="sidebar-menu-icon">🚪</span>
+                        <span>Logout</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <div class="navbar">
         <div class="nav-brand">Qubo Labs - Student</div>
         <div class="nav-user">
-            <span>Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-            <button class="student-logout-btn" id="logout-btn" onclick="handleLogoutClick()">
-                🚪 Logout
+            <div class="nav-user-info">
+                <div class="nav-user-greeting">WELCOME,</div>
+                <div class="nav-user-name"><?php echo htmlspecialchars($_SESSION['user_name']); ?></div>
+            </div>
+            <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <a href="setup_fingerprint.php" class="btn btn-sm">🔒 Fingerprint Setup</a>
         </div>
     </div>
     
@@ -930,6 +1124,26 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
     <?php closeDBConnection($conn); ?>
     
     <script>
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const hamburger = document.getElementById('hamburger-btn');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const hamburger = document.getElementById('hamburger-btn');
+            
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            hamburger.classList.remove('active');
+        }
         // Timer configuration
         const LOGOUT_TIME = 10 * 60; // 10 minutes in seconds
         let timeRemaining = LOGOUT_TIME;
@@ -941,6 +1155,8 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         
         // Handle logout button click
         function handleLogoutClick() {
+            closeSidebar(); // Always close sidebar first
+            
             if (isTimerFinished) {
                 // Timer finished, show regular logout confirmation
                 showLogoutConfirmation();
@@ -953,20 +1169,17 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         // Start the logout timer
         function startTimer() {
             updateModalTimer();
+            updateSidebarLogoutButton(); // Add this line
+            
             timerInterval = setInterval(() => {
                 timeRemaining--;
                 updateModalTimer();
-                
-                const logoutBtn = document.getElementById('logout-btn');
+                updateSidebarLogoutButton(); // Add this line
                 
                 if (timeRemaining <= 0) {
-                    // Timer finished
                     clearInterval(timerInterval);
                     isTimerFinished = true;
-                    
-                    // Enable logout button
-                    logoutBtn.classList.add('enabled');
-                    logoutBtn.style.cursor = 'pointer';
+                    updateSidebarLogoutButton(); // Add this line
                 }
             }, 1000);
         }
@@ -980,6 +1193,15 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             const seconds = timeRemaining % 60;
             const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
             document.getElementById('modal-timer-display').textContent = display;
+        }
+
+        function updateSidebarLogoutButton() {
+            const logoutBtn = document.getElementById('sidebar-logout-btn');
+            if (isTimerFinished) {
+                logoutBtn.classList.remove('disabled');
+            } else {
+                logoutBtn.classList.add('disabled');
+            }
         }
         
         function performLogout() {
@@ -1115,6 +1337,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         // Close modal on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                closeSidebar();
                 closeAdminModal();
                 closeLogoutConfirmation();
             }
