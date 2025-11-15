@@ -241,8 +241,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <button type="button" id="fingerprint-btn" class="btn-fingerprint">
-                    <span class="fingerprint-icon">👆</span>
-                    <span>Sign in with Fingerprint</span>
+                    <span class="fingerprint-icon">☝️</span>
+                    <span>Login with Fingerprint</span>
                 </button>
                 
                 <div id="fingerprint-info" class="biometric-info" style="display: none;">

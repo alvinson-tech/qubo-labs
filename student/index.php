@@ -83,61 +83,106 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             gap: 12px;
         }
         
-        .logout-timer {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #fee2e2;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            color: #991b1b;
-            font-size: 14px;
-        }
-        
-        .logout-timer.warning {
-            background: #fef3c7;
-            color: #92400e;
-            animation: pulse 1s ease-in-out infinite;
-        }
-        
-        .logout-timer.critical {
-            background: #fee2e2;
-            color: #991b1b;
-            animation: pulse 0.5s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-        
-        .timer-icon {
-            font-size: 18px;
-        }
-        
-        .admin-logout-btn {
+        .student-logout-btn {
             background: var(--secondary);
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 8px 16px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 700;
-            cursor: pointer;
+            cursor: not-allowed;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 6px;
+            opacity: 0.5;
         }
         
-        .admin-logout-btn:hover {
-            background: #475569;
+        .student-logout-btn.enabled {
+            cursor: pointer;
+            opacity: 1;
+            background: var(--danger);
+        }
+        
+        .student-logout-btn.enabled:hover {
+            background: #dc2626;
             transform: translateY(-1px);
+        }
+        
+        .logout-confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logout-confirmation-modal.active {
+            display: flex;
+        }
+        
+        .logout-confirmation-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .logout-confirmation-content h2 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .logout-confirmation-content p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        
+        .logout-confirmation-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .logout-confirmation-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        
+        .logout-confirmation-btn-cancel {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .logout-confirmation-btn-cancel:hover {
+            background: #475569;
+        }
+        
+        .logout-confirmation-btn-logout {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .logout-confirmation-btn-logout:hover {
+            background: #dc2626;
         }
         
         .admin-modal-overlay {
@@ -176,9 +221,52 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         
         .admin-modal-content p {
             color: var(--text-secondary);
-            margin-bottom: 35px;
+            margin-bottom: 25px;
             text-align: center;
             font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .timer-info-box {
+            background: #fffbeb;
+            border: 2px solid #fde68a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+        }
+        
+        .timer-info-box .remaining-time {
+            font-size: 32px;
+            font-weight: 800;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        
+        .timer-info-box .info-text {
+            font-size: 13px;
+            color: #78350f;
+            line-height: 1.5;
+        }
+        
+        .admin-section-divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .admin-section-divider::before,
+        .admin-section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        
+        .admin-section-divider span {
+            padding: 0 15px;
         }
         
         .admin-code-input-group {
@@ -551,24 +639,48 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         <div class="nav-brand">Qubo Labs - Student</div>
         <div class="nav-user">
             <span>Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-            <div class="timer-container">
-                <div class="logout-timer" id="logout-timer">
-                    <span class="timer-icon">⏰</span>
-                    <span id="timer-display">10:00</span>
-                </div>
-                <button class="admin-logout-btn" onclick="showAdminModal()">
-                    🔓 Logout
+            <button class="student-logout-btn" id="logout-btn" onclick="handleLogoutClick()">
+                🚪 Logout
+            </button>
+            <a href="setup_fingerprint.php" class="btn btn-sm">🔒 Fingerprint Setup</a>
+        </div>
+    </div>
+    
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-confirmation-modal" class="logout-confirmation-modal">
+        <div class="logout-confirmation-content">
+            <h2>🚪 Logout Confirmation</h2>
+            <p>Are you sure you want to logout?</p>
+            <div class="logout-confirmation-buttons">
+                <button class="logout-confirmation-btn logout-confirmation-btn-cancel" onclick="closeLogoutConfirmation()">
+                    Cancel
+                </button>
+                <button class="logout-confirmation-btn logout-confirmation-btn-logout" onclick="confirmLogout()">
+                    Logout
                 </button>
             </div>
-            <a href="setup_fingerprint.php" class="btn btn-sm">🔒 Fingerprint Setup</a>
         </div>
     </div>
     
     <!-- Admin Logout Modal -->
     <div id="admin-modal" class="admin-modal-overlay">
         <div class="admin-modal-content">
-            <h2>🔐 Admin Logout</h2>
-            <p>Enter the admin code to logout immediately</p>
+            <h2>🔐 Logout</h2>
+            <p>You cannot logout yet. Please wait for the timer to finish.</p>
+            
+            <div class="timer-info-box">
+                <div class="remaining-time" id="modal-timer-display">10:00</div>
+                <div class="info-text">
+                    ⏳ Time remaining until logout is enabled<br>
+                    Please wait for the timer to reach zero
+                </div>
+            </div>
+            
+            <div class="admin-section-divider">
+                <span>OR if you're an admin</span>
+            </div>
+            
+            <p style="margin-bottom: 20px; margin-top: 0;">Enter the admin code to logout immediately</p>
             
             <div class="admin-code-input-group">
                 <input type="number" 
@@ -751,7 +863,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
                     </div>
                 <?php else: ?>
                     <div class="no-session-message">
-                        <div class="icon">📅</div>
+                        <div class="icon">🗓️</div>
                         <h2>No Active Session</h2>
                         <p>There are no active attendance sessions at the moment.</p>
                         <p class="info-text">Please wait for your instructor to start a session.</p>
@@ -822,50 +934,76 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         const LOGOUT_TIME = 10 * 60; // 10 minutes in seconds
         let timeRemaining = LOGOUT_TIME;
         let timerInterval;
+        let isTimerFinished = false;
         
         // Admin code
         const ADMIN_CODE = '19150431';
         
+        // Handle logout button click
+        function handleLogoutClick() {
+            if (isTimerFinished) {
+                // Timer finished, show regular logout confirmation
+                showLogoutConfirmation();
+            } else {
+                // Timer still running, show admin modal
+                showAdminModal();
+            }
+        }
+        
         // Start the logout timer
         function startTimer() {
-            updateTimerDisplay();
+            updateModalTimer();
             timerInterval = setInterval(() => {
                 timeRemaining--;
-                updateTimerDisplay();
+                updateModalTimer();
                 
-                // Update timer styling based on time remaining
-                const timerElement = document.getElementById('logout-timer');
-                if (timeRemaining <= 60) {
-                    timerElement.classList.add('critical');
-                    timerElement.classList.remove('warning');
-                } else if (timeRemaining <= 180) {
-                    timerElement.classList.add('warning');
-                    timerElement.classList.remove('critical');
-                } else {
-                    timerElement.classList.remove('warning', 'critical');
-                }
+                const logoutBtn = document.getElementById('logout-btn');
                 
-                // Auto logout when time reaches 0
                 if (timeRemaining <= 0) {
+                    // Timer finished
                     clearInterval(timerInterval);
-                    performLogout();
+                    isTimerFinished = true;
+                    
+                    // Enable logout button
+                    logoutBtn.classList.add('enabled');
+                    logoutBtn.style.cursor = 'pointer';
                 }
             }, 1000);
         }
         
-        function updateTimerDisplay() {
+        function updateModalTimer() {
+            if (timeRemaining <= 0) {
+                document.getElementById('modal-timer-display').textContent = 'Ready!';
+                return;
+            }
             const minutes = Math.floor(timeRemaining / 60);
             const seconds = timeRemaining % 60;
             const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById('timer-display').textContent = display;
+            document.getElementById('modal-timer-display').textContent = display;
         }
         
         function performLogout() {
+            // This function is now only called from admin code or confirmation
+            allowNavigation = true;
             window.location.href = '../logout.php';
+        }
+        
+        // Logout confirmation functions
+        function showLogoutConfirmation() {
+            document.getElementById('logout-confirmation-modal').classList.add('active');
+        }
+        
+        function closeLogoutConfirmation() {
+            document.getElementById('logout-confirmation-modal').classList.remove('active');
+        }
+        
+        function confirmLogout() {
+            performLogout();
         }
         
         // Admin modal functions
         function showAdminModal() {
+            updateModalTimer();
             document.getElementById('admin-modal').classList.add('active');
             document.getElementById('admin-digit-1').focus();
             document.getElementById('admin-error').style.display = 'none';
@@ -894,6 +1032,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
             
             if (code === ADMIN_CODE) {
                 clearInterval(timerInterval);
+                closeAdminModal();
                 performLogout();
             } else {
                 showAdminError('Incorrect admin code. Please try again.');
@@ -977,19 +1116,38 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeAdminModal();
+                closeLogoutConfirmation();
             }
         });
         
-        // Close modal when clicking outside
+        // Close modals when clicking outside
         document.getElementById('admin-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeAdminModal();
             }
         });
         
-        // Prevent page unload/close without admin code
+        document.getElementById('logout-confirmation-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogoutConfirmation();
+            }
+        });
+        
+        // Prevent page unload/close without admin code (but allow logout and fingerprint setup)
+        let allowNavigation = false;
+        
+        // Handle logout link clicks - no longer used since we have button only
+        document.addEventListener('DOMContentLoaded', function() {
+            // Allow fingerprint setup links to navigate freely
+            document.querySelectorAll('a[href*="setup_fingerprint.php"]').forEach(link => {
+                link.addEventListener('click', function() {
+                    allowNavigation = true;
+                });
+            });
+        });
+        
         window.addEventListener('beforeunload', function(e) {
-            if (timeRemaining > 0) {
+            if (timeRemaining > 0 && !allowNavigation) {
                 e.preventDefault();
                 e.returnValue = '';
                 return '';

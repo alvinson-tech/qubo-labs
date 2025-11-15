@@ -194,10 +194,10 @@ if (hasMarkedAttendance($session_id, $student_id)) {
             
             <div class="alternative-options">
                 <button class="btn-alternative" onclick="showManualSeatModal()">
-                    🔧 QR Code Not Working?
+                    🚫 Not Working?
                 </button>
                 <button class="btn-alternative" onclick="showNoQRModal()">
-                    ❌ No QR Code Available
+                    ❌ No QR Code
                 </button>
             </div>
         </div>
@@ -211,7 +211,7 @@ if (hasMarkedAttendance($session_id, $student_id)) {
             <input type="text" 
                    id="manual-seat-input" 
                    class="seat-input" 
-                   placeholder="e.g., C16"
+                   placeholder="Enter"
                    maxlength="5">
             <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">
                 Your seat number should be visible on your seat (e.g., A1, B10, C16)

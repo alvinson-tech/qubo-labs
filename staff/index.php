@@ -102,9 +102,100 @@ closeDBConnection($conn);
             background: #dbeafe;
             color: #1e40af;
         }
+        
+        .logout-confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logout-confirmation-modal.active {
+            display: flex;
+        }
+        
+        .logout-confirmation-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .logout-confirmation-content h2 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .logout-confirmation-content p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        
+        .logout-confirmation-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .logout-confirmation-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        
+        .logout-confirmation-btn-cancel {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .logout-confirmation-btn-cancel:hover {
+            background: #475569;
+        }
+        
+        .logout-confirmation-btn-logout {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .logout-confirmation-btn-logout:hover {
+            background: #dc2626;
+        }
     </style>
 </head>
 <body>
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-confirmation-modal" class="logout-confirmation-modal">
+        <div class="logout-confirmation-content">
+            <h2>🚪 Logout Confirmation</h2>
+            <p>Are you sure you want to logout?</p>
+            <div class="logout-confirmation-buttons">
+                <button class="logout-confirmation-btn logout-confirmation-btn-cancel" onclick="closeLogoutConfirmation()">
+                    Cancel
+                </button>
+                <button class="logout-confirmation-btn logout-confirmation-btn-logout" onclick="confirmLogout()">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <div class="navbar">
         <div class="nav-brand">Qubo Labs - Staff</div>
         <div class="nav-user">
@@ -255,5 +346,45 @@ closeDBConnection($conn);
             <?php endif; ?>
         </div>
     </div>
+    
+    <script>
+        // Logout confirmation functions
+        function showLogoutConfirmation() {
+            document.getElementById('logout-confirmation-modal').classList.add('active');
+        }
+        
+        function closeLogoutConfirmation() {
+            document.getElementById('logout-confirmation-modal').classList.remove('active');
+        }
+        
+        function confirmLogout() {
+            window.location.href = '../logout.php';
+        }
+        
+        // Handle logout link clicks with confirmation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intercept all logout links
+            document.querySelectorAll('a[href*="logout.php"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showLogoutConfirmation();
+                });
+            });
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogoutConfirmation();
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('logout-confirmation-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogoutConfirmation();
+            }
+        });
+    </script>
 </body>
 </html>
