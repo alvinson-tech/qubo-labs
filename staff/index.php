@@ -110,6 +110,7 @@ closeDBConnection($conn);
         <div class="nav-user">
             <span>Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
             <a href="../logout.php" class="btn btn-sm">Logout</a>
+            <a href="setup_fingerprint.php" class="btn btn-sm">🔒 Fingerprint Setup</a>
         </div>
     </div>
     

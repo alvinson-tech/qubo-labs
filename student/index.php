@@ -560,6 +560,7 @@ $overall_percentage = $total_sessions_all > 0 ? round(($total_attended_all / $to
                     🔓 Logout
                 </button>
             </div>
+            <a href="setup_fingerprint.php" class="btn btn-sm">🔒 Fingerprint Setup</a>
         </div>
     </div>
     
