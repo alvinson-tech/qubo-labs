@@ -31,9 +31,13 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Get attendance records (modified to show N/A for virtual seats)
+// Get attendance records (modified to show N/A for virtual seats and MANUAL for manual seats)
 $query = "SELECT ar.*, 
-          CASE WHEN s.seat_number = 'VIRTUAL' THEN 'N/A' ELSE s.seat_number END as seat_number, 
+          CASE 
+              WHEN s.seat_number = 'VIRTUAL' THEN 'N/A'
+              WHEN s.seat_number = 'MANUAL' THEN 'MANUAL'
+              ELSE s.seat_number 
+          END as seat_number, 
           s.row_number, 
           s.seat_position, 
           st.student_name, 

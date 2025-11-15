@@ -72,16 +72,51 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             cursor: not-allowed;
         }
         
+        .btn-mark-present {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-mark-present:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-mark-present:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-mark-present:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .verified-text {
             color: #10b981;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 14px;
         }
         
         .na-text {
             color: #94a3b8;
             font-weight: 500;
-            font-size: 12px;
+            font-size: 13px;
         }
         
         .hall-info {
@@ -423,7 +458,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                             <th>Student Name</th>
                             <th>Seat No.</th>
                             <th>Status</th>
-                            <th>Manual Verify</th>
+                            <th>Mark Present</th>
                         </tr>
                     </thead>
                     <tbody id="student-list-body">
@@ -531,20 +566,24 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 
                 let statusBadge = '';
                 let statusClass = '';
-                let manualVerifyCol = '';
+                let actionCol = '';
                 
                 if (!record.marked) {
                     statusBadge = '<span class="status-badge badge-not-marked">○ Not Marked</span>';
                     statusClass = 'status-not-marked';
-                    manualVerifyCol = '<span class="na-text">N/A</span>';
+                    actionCol = `
+                        <button class="btn-mark-present" onclick="markManualAttendance(${record.student_id})" title="Mark as Present">
+                            ✓
+                        </button>
+                    `;
                 } else if (record.status === 'verified') {
                     statusBadge = '<span class="status-badge badge-verified">✓ Verified</span>';
                     statusClass = 'status-verified';
-                    manualVerifyCol = '<span class="verified-text">✓ Verified</span>';
+                    actionCol = '<span class="verified-text">✓</span>';
                 } else if (record.no_neighbours == 1) {
                     statusBadge = '<span class="status-badge badge-not-verified">⚠ Not Verified</span>';
                     statusClass = 'status-not-verified';
-                    manualVerifyCol = `
+                    actionCol = `
                         <div class="manual-verify-btns">
                             <button class="btn-verify" onclick="manualVerify(${record.student_id}, true)" title="Approve">✓</button>
                             <button class="btn-reject" onclick="manualVerify(${record.student_id}, false)" title="Reject">✗</button>
@@ -553,7 +592,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                 } else {
                     statusBadge = '<span class="status-badge badge-pending">⏳ Pending</span>';
                     statusClass = 'status-pending';
-                    manualVerifyCol = '<span class="na-text">N/A</span>';
+                    actionCol = '<span class="na-text">—</span>';
                 }
                 
                 row.className = statusClass;
@@ -563,7 +602,7 @@ $hall_seats = getSeatsForHall($session['hall_id']);
                     <td>${record.student_name}</td>
                     <td style="font-weight: 700; color: #2563eb;">${record.seat_number}</td>
                     <td>${statusBadge}</td>
-                    <td>${manualVerifyCol}</td>
+                    <td>${actionCol}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -601,6 +640,35 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             })
             .catch(error => {
                 alert('Error processing manual verification. Please try again.');
+            });
+        }
+        
+        function markManualAttendance(studentId) {
+            if (!confirm('Mark this student as present? Seat number will be recorded as "MANUAL".')) {
+                return;
+            }
+            
+            fetch('../api/mark_manual_attendance.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    student_id: studentId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    updateLiveData();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error marking manual attendance. Please try again.');
             });
         }
         
@@ -681,19 +749,16 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             
             // Search through rows
             for (let row of rows) {
-                const usnCell = row.cells[1]; // USN is in the second column
+                const usnCell = row.cells[1];
                 if (usnCell) {
                     const usn = usnCell.textContent.trim();
                     
-                    // Check if USN contains the search term
                     if (usn.includes(searchInput)) {
-                        // Scroll to the row
                         row.scrollIntoView({ 
                             behavior: 'smooth', 
                             block: 'center' 
                         });
                         
-                        // Highlight the row
                         setTimeout(() => {
                             row.classList.add('highlight-row');
                         }, 300);
@@ -718,27 +783,23 @@ $hall_seats = getSeatsForHall($session['hall_id']);
             document.getElementById('clear-btn').style.display = 'none';
             document.getElementById('search-message').style.display = 'none';
             
-            // Remove all highlights
             const rows = document.querySelectorAll('#student-list-body tr');
             rows.forEach(row => {
                 row.classList.remove('highlight-row');
             });
             
-            // Scroll to top of table
             document.querySelector('.students-attendance-table').scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'start' 
             });
         }
 
-        // Allow Enter key to trigger search
         document.getElementById('search-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 searchStudent();
             }
         });
 
-        // Allow Escape key to clear search
         document.getElementById('search-input').addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 clearSearch();
